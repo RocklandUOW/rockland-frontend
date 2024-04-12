@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,11 +20,18 @@ class _GMapsPageState extends State<GMapsPage> {
   static const LatLng googlePlex3 = LatLng(37.3923, -122.0848);
   static const LatLng applePlex = LatLng(37.3346, -122.0090);
   LatLng? currentPos;
+  late StreamSubscription<LocationData> locationChangedListener;
 
   @override
   void initState() {
     super.initState();
     getLocation();
+  }
+
+  @override
+  void dispose() {
+    locationChangedListener.cancel();
+    super.dispose();
   }
 
   void handleTap() {
@@ -103,11 +112,13 @@ class _GMapsPageState extends State<GMapsPage> {
       }
     }
 
-    locationController.onLocationChanged.listen((LocationData currentLoc) {
-      if (currentLoc.latitude != null && currentLoc.longitude != null) {
+    locationChangedListener =
+        locationController.onLocationChanged.listen((LocationData currentLoc) {
+      if (currentLoc.latitude != null &&
+          currentLoc.longitude != null &&
+          mounted) {
         setState(() {
           currentPos = LatLng(currentLoc.latitude!, currentLoc.longitude!);
-          print(currentPos);
         });
       }
     });
