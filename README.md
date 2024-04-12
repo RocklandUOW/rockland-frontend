@@ -1,10 +1,12 @@
-# rockland
+# Rockland
 
-Rockland
+Welcome to the frontend repository for the Rockland app. Rapid development updates will be pushed in branches other than the `main` branch. The `main` branch will have the latest updates only when merging and version update is necessary. 
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is developed using Flutter.
+
+> TODO: write tutorial on how to setup Flutter from scratch.
 
 A few resources to get you started if this is your first Flutter project:
 
