@@ -28,11 +28,11 @@ class FirstPage extends StatelessWidget {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(bottom: 85, left: 40, top: 65, right: 40),
+                padding: EdgeInsets.only(bottom: 120, left: 40, top: 100, right: 40),
                 child: Column(
                   children: [
                     Text(
-                      "Rockland",
+                      "Rockland 🪨",
                       style: TextStyle(
                           fontSize: 25,
                           color: Colors.white,
@@ -44,7 +44,7 @@ class FirstPage extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        "Welcome to Rockland! A onestop app for rock enthusiasts to explore, "
+                        "Hi there, rockhound! Rockland is a onestop app for rock enthusiasts to explore, "
                         "collect, and connect with fellow rockhounds.",
                         style: TextStyle(
                           color: Colors.white,
