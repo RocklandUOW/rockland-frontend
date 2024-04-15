@@ -10,19 +10,23 @@ class CommonButton extends StatelessWidget {
   final String buttonText;
   final bool isoutlined;
   final bool isText;
+  final bool isIcon;
   final Gradient? gradient;
+  final Icon? icon;
 
   const CommonButton(
       {super.key,
       required this.onPressed,
       this.isoutlined = false,
+      this.isIcon = false,
       this.isText = false,
       this.size = const Size(250, 40),
       this.foregroundColor = Colors.black26,
       this.backgroundColor = Colors.white,
       this.textColor = Colors.black,
       this.buttonText = "",
-      this.gradient});
+      this.gradient,
+      this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +55,20 @@ class CommonButton extends StatelessWidget {
         child: Text(
           buttonText,
           style: TextStyle(color: textColor),
+        ),
+      );
+    } else if (isIcon) {
+      return CircleAvatar(
+        radius: size!.width/2,
+        backgroundColor: backgroundColor,
+        child: IconButton(
+          onPressed: onPressed,
+          style: IconButton.styleFrom(
+              elevation: 0,
+              foregroundColor: foregroundColor,
+              shadowColor: Colors.transparent,
+              minimumSize: size),
+          icon: icon!,
         ),
       );
     } else {
