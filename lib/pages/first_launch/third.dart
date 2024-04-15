@@ -4,18 +4,10 @@ import 'package:rockland/pages/gmaps.dart';
 import 'package:rockland/screens/account/login.dart';
 import 'package:rockland/screens/account/register.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/activity.dart';
 
 class ThirdPage extends StatelessWidget {
   const ThirdPage({super.key});
-
-  void handleButtonPress(BuildContext context, Widget activity) {
-    Future.delayed(const Duration(milliseconds: 300), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => activity),
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +60,7 @@ class ThirdPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CommonButton(
-                            onPressed: () => handleButtonPress(
+                            onPressed: () => Activity.startActivity(
                                 context, const RegisterAccount()),
                             buttonText: "Register",
                             textColor: Colors.white,
@@ -83,7 +75,7 @@ class ThirdPage extends StatelessWidget {
                             width: 15,
                           ),
                           CommonButton(
-                            onPressed: () => handleButtonPress(
+                            onPressed: () => Activity.startActivity(
                                 context, const LoginAccount()),
                             buttonText: "Sign in",
                             textColor: Colors.white,
@@ -105,8 +97,8 @@ class ThirdPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5),
                         child: CommonButton(
-                          onPressed: () =>
-                              handleButtonPress(context, const GMapsPage()),
+                          onPressed: () => Activity.startActivity(
+                              context, const GMapsPage()),
                           isText: true,
                           buttonText: "Skip for now. Take me to the app >",
                           size:
