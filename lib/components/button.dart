@@ -59,7 +59,7 @@ class CommonButton extends StatelessWidget {
       );
     } else if (isIcon) {
       return CircleAvatar(
-        radius: size!.width / 2,
+        radius: size!.width/2,
         backgroundColor: backgroundColor,
         child: IconButton(
           onPressed: onPressed,
