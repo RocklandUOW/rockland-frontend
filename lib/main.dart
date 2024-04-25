@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rockland/pages/gmaps.dart';
+import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/screens/welcome.dart';
 
 void main() {
