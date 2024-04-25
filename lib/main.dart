@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rockland/pages/gmaps.dart';
+import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/screens/welcome.dart';
 import 'package:rockland/styles/colors.dart';
 
