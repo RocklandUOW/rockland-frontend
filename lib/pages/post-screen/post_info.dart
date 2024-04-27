@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rockland/pages/gmaps.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/activity.dart';
 
 class PostInfoPage extends StatelessWidget {
   const PostInfoPage({super.key});
@@ -9,57 +11,46 @@ class PostInfoPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Container(
         color: CustomColor.mainBrown,
-        child:  SafeArea(
+        child: SafeArea(
           child: Center(
             child: Column(
               children: [
                 // map bar
                 Container(
-                color: CustomColor.quarternaryBrown,
-                child: 
-                  const Padding(
-                    padding:  EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10
-                    ),
-                    child:  Row(
-                      children: [
-                        // place icon
-                        Expanded(
-                          flex: 1,
-                          child: Icon(
-                            Icons.place,
-                            color: Colors.white,
-                            size: 28,
-                          ),
+                  color: CustomColor.quarternaryBrown,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Row(children: [
+                      // place icon
+                      const Expanded(
+                        flex: 1,
+                        child: Icon(
+                          Icons.place,
+                          color: Colors.white,
+                          size: 28,
                         ),
+                      ),
 
-                        // Place information (text)
-                        Expanded(
-                          flex: 8,
-                          child: Column(
-                            children: [
-                              Text(
-                                  'Place Name',
-                                  style: TextStyle(
-                                    color: Colors.white
-                                  )
-                                ),
-                              Text(
-                                  'State, Postcode',
-                                  style: TextStyle(
-                                    color: Colors.white
-                                  )
-                                ),
-                            ]
-                          ),
-                        ),
+                      // Place information (text)
+                      const Expanded(
+                        flex: 8,
+                        child: Column(children: [
+                          Text('Place Name',
+                              style: TextStyle(color: Colors.white)),
+                          Text('State, Postcode',
+                              style: TextStyle(color: Colors.white)),
+                        ]),
+                      ),
 
-                        // spacer
-                        Spacer(),
+                      // spacer
+                      const Spacer(),
 
-                        // map picture / Button
-                        Placeholder(
+                      // map picture / Button
+                      InkWell(
+                        onTap: () =>
+                            Activity.startActivity(context, new GMapsPage()),
+                        child: const Placeholder(
                           child: SizedBox(
                             width: 100,
                             height: 100,
@@ -71,25 +62,20 @@ class PostInfoPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ] // map bar
-                    ),
+                      ),
+                    ] // map bar
+                        ),
                   ),
                 ),
-                
+
                 // Description
                 Container(
-                  color: CustomColor.tertiaryBrown,
-                  child: 
-                    const Center(
-                      child: 
-                        Text(
-                          'Description Here',
-                          style: TextStyle(
-                            color: Colors.white,
-                          )
-                        )
-                    )
-                ),
+                    color: CustomColor.tertiaryBrown,
+                    child: const Center(
+                        child: Text('Description Here',
+                            style: TextStyle(
+                              color: Colors.white,
+                            )))),
               ], // main body
             ),
           ),
