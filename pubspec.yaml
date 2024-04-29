@@ -90,6 +90,8 @@ flutter:
     - family: Lato
       fonts: 
         - asset: lib/fonts/Lato.ttf
+        - asset: lib/fonts/Lato-Black.ttf
+          weight: 700
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
