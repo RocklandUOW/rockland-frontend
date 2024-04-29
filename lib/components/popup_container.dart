@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 /*
@@ -62,36 +63,18 @@ class PopUpContainerState extends State<PopUpContainer> {
   double height = 0;
   double width = 200;
 
-  double initialX = 0;
-  double initialY = 0;
-
   double cumulativeDy = 0;
-  double cumulativeDx = 0;
-  double cumulativeMid = 0;
 
-  bool scrollEnabled = false;
   bool isDragging = false;
-  double scrollOffset = 0;
 
   @override
   void initState() {
     super.initState();
     widget.controller?.showPopup = showPopup;
     widget.controller?.hidePopup = hidePopup;
-    scrollController.addListener(() {
-      scrollOffset = scrollController.offset;
-      scrollEnabled = false;
-    });
     setState(() {
       height = widget.minHeight;
     });
-  }
-
-  bool checkScrollOffset() {
-    if (scrollController.hasClients) {
-      return scrollController.offset > 0;
-    }
-    return true;
   }
 
   void showPopup() {
@@ -106,8 +89,89 @@ class PopUpContainerState extends State<PopUpContainer> {
     });
   }
 
+  void onDragStart(initialX, initialY) {
+    if (!widget.enableDrag!) {
+      return;
+    }
+    initialHeight = height;
+    initialWidth = width;
+  }
+
+  void onDrag(dx, dy, {canMaximise = true, canMinimise = true}) {
+    if (!widget.enableDrag!) {
+      return;
+    }
+    cumulativeDy -= dy;
+    var newHeight = height - dy;
+
+    // prevents "Build scheduled during frame" error
+    if (cumulativeDy > 0 && !canMaximise) {
+      return;
+    }
+
+    if (cumulativeDy < 0) {
+      // prevents drag speed being multiplied cause of overlapping
+      // or container being dragged down when listview is scrolled down
+      // and position is not 0
+      if (!canMinimise || scrollController.position.pixels != 0.0) {
+        return;
+      }
+    }
+
+    setState(() {
+      isDragging = true;
+      previousHeight = height;
+      if (height > widget.maxHeight) {
+        height = widget.maxHeight;
+      } else {
+        height = newHeight > 0 ? newHeight : 0;
+      }
+    });
+  }
+
+  void onDragEnd(finalX, finalY) {
+    if (!widget.enableDrag!) {
+      return;
+    }
+    setState(() {
+      isDragging = false;
+    });
+    if (cumulativeDy < -100 &&
+        scrollController.position.pixels == 0.0 &&
+        height != initialHeight) {
+      // prevents container being dragged down when list
+      // view is scrolled down and position is not 0
+      setState(() {
+        if (height > widget.middleHeight) {
+          height = widget.middleHeight;
+        } else {
+          height = widget.minHeight;
+          // reset listview scroll position
+          scrollController.jumpTo(0.0);
+        }
+      });
+    } else if (cumulativeDy > 100) {
+      setState(() {
+        if (height > widget.middleHeight) {
+          height = widget.maxHeight;
+        } else {
+          height = widget.middleHeight;
+        }
+      });
+    } else {
+      setState(() {
+        height = initialHeight;
+      });
+    }
+    cumulativeDy = 0;
+    initialHeight = height;
+    initialWidth = width;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final parentWidth = MediaQuery.of(context).size.width;
+
     return SafeArea(
         child: Stack(
       children: <Widget>[
@@ -148,122 +212,48 @@ class PopUpContainerState extends State<PopUpContainer> {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20))),
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Container(
-                        width: 75,
-                        height: 5,
-                        decoration: BoxDecoration(
-                            color: Colors.white70,
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                    ),
-                    Expanded(
-                        child: Padding(
-                      padding: widget.padding!,
-                      child: Container(
-                        color: widget.listBgColor,
-                        child: Padding(
-                          padding: widget.padding!,
-                          child: NotificationListener<ScrollEndNotification>(
-                            child: ListView(
-                              physics: scrollEnabled
-                                  ? const AlwaysScrollableScrollPhysics()
-                                  : const NeverScrollableScrollPhysics(),
-                              children: [
-                                ...?widget.children,
-                              ],
-                            ),
-                            onNotification: (notification) {
-                              if (scrollController.position.pixels == 0.0) {
-                                setState(() {
-                                  scrollEnabled = false;
-                                });
-                              }
-                              return true;
-                            },
-                          ),
+            child: ContainerDragDetector(
+              onDragStart: onDragStart,
+              onDrag: (dx, dy) => {onDrag(dx, dy, canMaximise: false)},
+              onDragEnd: onDragEnd,
+              child: Column(
+                children: [
+                  ContainerDragDetector(
+                    onDragStart: onDragStart,
+                    onDrag: (dx, dy) => {onDrag(dx, dy, canMinimise: false)},
+                    onDragEnd: onDragEnd,
+                    child: SizedBox(
+                      width: parentWidth,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 170),
+                        child: Container(
+                          height: 5,
+                          decoration: BoxDecoration(
+                              color: Colors.white70,
+                              borderRadius: BorderRadius.circular(5)),
                         ),
                       ),
-                    ))
-                  ],
-                ),
-                ContainerDragDetector(
-                  scrollController: scrollController,
-                  onDragStart: (initialX, initialY) {
-                    if (!widget.enableDrag!) {
-                      return;
-                    }
-                    initialHeight = height;
-                    initialWidth = width;
-                  },
-                  onDrag: (dx, dy) {
-                    if (!widget.enableDrag!) {
-                      return;
-                    }
-                    cumulativeDy -= dy;
-                    var newHeight = height - dy;
-                    setState(() {
-                      isDragging = true;
-                      if (scrollController.hasClients) {
-                        if (scrollController.position.pixels == 0.0) {
-                          if (cumulativeDy > 0) {
-                            scrollEnabled = true;
-                          } else {
-                            scrollEnabled = false;
-                          }
-                        }
-                      }
-                      previousHeight = height;
-                      if (height > widget.maxHeight) {
-                        height = widget.maxHeight;
-                      } else {
-                        height = newHeight > 0 ? newHeight : 0;
-                      }
-                    });
-                  },
-                  onDragEnd: (finalX, finalY) {
-                    if (!widget.enableDrag!) {
-                      return;
-                    }
-                    setState(() {
-                      isDragging = false;
-                    });
-                    if (cumulativeDy < -30) {
-                      setState(() {
-                        if (height > widget.middleHeight) {
-                          height = widget.middleHeight;
-                        } else {
-                          height = widget.minHeight;
-                        }
-                        // reset listview scroll position
-                        if (scrollController.hasClients) {
-                          scrollController.jumpTo(0);
-                        }
-                      });
-                    } else if (cumulativeDy > 30) {
-                      setState(() {
-                        if (height > widget.middleHeight) {
-                          height = widget.maxHeight;
-                        } else {
-                          height = widget.middleHeight;
-                        }
-                      });
-                    } else {
-                      setState(() {
-                        height = initialHeight;
-                      });
-                    }
-                    cumulativeDy = 0;
-                    initialHeight = height;
-                    initialWidth = width;
-                  },
-                ),
-              ],
+                    ),
+                  ),
+                  Expanded(
+                      child: Padding(
+                    padding: widget.padding!,
+                    child: Container(
+                      color: widget.listBgColor,
+                      child: Padding(
+                        padding: widget.padding!,
+                        child: ListView(
+                          controller: scrollController,
+                          children: [
+                            ...?widget.children,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ))
+                ],
+              ),
             ),
           ),
         ),
@@ -278,14 +268,14 @@ class ContainerDragDetector extends StatefulWidget {
   final Function(double initialX, double initialY) onDragStart;
   final Function(double dx, double dy) onDrag;
   final Function(double finalX, double finalY) onDragEnd;
-  final ScrollController scrollController;
+  final Widget? child;
 
   const ContainerDragDetector(
       {super.key,
       required this.onDragStart,
       required this.onDrag,
       required this.onDragEnd,
-      required this.scrollController});
+      this.child});
 
   @override
   _ContainerDragDetectorState createState() => _ContainerDragDetectorState();
@@ -317,18 +307,34 @@ class _ContainerDragDetectorState extends State<ContainerDragDetector> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return RawGestureDetector(
+      gestures: {
+        AllowMultipleVerticalDragGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<
+                AllowMultipleVerticalDragGestureRecognizer>(
+          () => AllowMultipleVerticalDragGestureRecognizer(),
+          (AllowMultipleVerticalDragGestureRecognizer instance) {
+            instance.onStart = _handleDrag;
+            instance.onUpdate = _handleUpdate;
+            instance.onEnd = _handleDragEnd;
+          },
+        )
+      },
       behavior: HitTestBehavior.translucent,
-      onPanStart: _handleDrag,
-      onPanEnd: _handleDragEnd,
-      onPanUpdate: _handleUpdate,
-      child: IgnorePointer(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.transparent,
-          ),
-        ),
-      ),
+      child: widget.child,
     );
+  }
+}
+
+// Credit to Nash0x7E2 for making the code and Niklas Raab
+// for pointing it out that this existed. Respective links:
+// https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+// https://stackoverflow.com/questions/58138114/receive-onverticaldragupdate
+// -on-nested-gesturedetectors-in-flutter
+class AllowMultipleVerticalDragGestureRecognizer
+    extends VerticalDragGestureRecognizer {
+  @override
+  void rejectGesture(int pointer) {
+    acceptGesture(pointer);
   }
 }
