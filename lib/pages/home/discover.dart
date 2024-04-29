@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:rockland/screens/home.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key});
@@ -25,6 +24,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   void initState() {
     super.initState();
+    HomeScreen.previousFragment.add(const DiscoverPage());
     getLocation();
   }
 
@@ -61,8 +61,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
               child: Text("Loading..."),
             )
           : SafeArea(
-              child: Expanded(
-                  child: GoogleMap(
+              child: GoogleMap(
               initialCameraPosition:
                   const CameraPosition(target: googlePlex, zoom: 13),
               markers: {
@@ -91,7 +90,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                   onTap: handleTap,
                 ),
               },
-            ))),
+            )),
     );
   }
 

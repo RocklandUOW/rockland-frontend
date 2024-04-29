@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rockland/components/popup_container.dart';
+import 'package:rockland/components/profile_page_builder.dart';
+import 'package:rockland/screens/home.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -8,12 +11,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  PopUpContainerController controller = PopUpContainerController();
+
+  @override
+  void initState() {
+    super.initState();
+    HomeScreen.previousFragment.add(const ProfilePage());
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text("Profile"),
-      ),
+      body: ProfilePageBuilder(),
     );
   }
 }

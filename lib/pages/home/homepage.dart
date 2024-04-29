@@ -1,145 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:rockland/pages/homepage/dashboard.dart';
+import 'package:rockland/components/popup_container.dart';
+import 'package:rockland/components/profile_page_builder.dart';
+import 'package:rockland/pages/home/profile.dart';
+import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
-import 'package:rockland/utility/physics.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
+class HomePageController {
+  late Function() hidePopup;
+  late Function() getAnimationDuration;
+  late Function() getPopUpController;
 }
 
-class _HomePageState extends State<HomePage> {
-  PageController pageController = PageController(initialPage: 0);
+class HomePage extends StatefulWidget {
+  final HomePageController? controller;
 
-  int activePage = 0;
+  const HomePage({super.key, this.controller});
 
-  List<Widget> pages = [
-    const DashboardPage(),
-    const DashboardPage(),
-  ];
+  @override
+  State<HomePage> createState() => HomePageState();
+}
 
-  void _handleTabButtonPress(int toPage) {
-    setState(() {
-      activePage = toPage;
-      pageController.animateToPage(toPage,
-          duration: const Duration(milliseconds: 300), curve: Curves.ease);
+class HomePageState extends State<HomePage> {
+  PopUpContainerController controller = PopUpContainerController();
+  ProfileBuilderController pbcontroller = ProfileBuilderController();
+  int animationDuration = 250;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller?.hidePopup = hidePopup;
+    widget.controller?.getAnimationDuration = () => animationDuration;
+    widget.controller?.getPopUpController = () => controller;
+    HomeScreen.previousFragment.add(const HomePage());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.showPopup();
+      pbcontroller.moveHeaderUp();
+      print(HomeScreen.previousFragment);
     });
+  }
+
+  void hidePopup() {
+    controller.hidePopup();
+    pbcontroller.moveHeaderDown();
   }
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final double middleHeight = mediaQuery.size.height / 2 + 200;
     return Scaffold(
-      backgroundColor: CustomColor.mainBrown,
       body: SafeArea(
-          child: Center(
-              child: Column(
+          child: Stack(
         children: [
-          Container(
-            color: CustomColor.mainBrown,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Rockland",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22),
-                      ),
-                      Text(
-                        "Welcome back, John!",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          ProfilePageBuilder(
+            profileBuilderController: pbcontroller,
           ),
-          Container(
-            decoration: const BoxDecoration(
-                color: CustomColor.mainBrown,
-                border: Border(
-                    bottom: BorderSide(width: 0.5, color: Colors.white30))),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 100),
-                      curve: Curves.easeInOut,
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  width: 1.5,
-                                  color: activePage == 0
-                                      ? Colors.white
-                                      : Colors.transparent))),
-                      child: TextButton(
-                          onPressed: () => _handleTabButtonPress(0),
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0))),
-                          child: const Text(
-                            "Dashboard",
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    ),
-                  ),
-                  Expanded(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 100),
-                      curve: Curves.easeInOut,
-                      decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  width: 1.5,
-                                  color: activePage == 1
-                                      ? Colors.white
-                                      : Colors.transparent))),
-                      child: TextButton(
-                          onPressed: () => _handleTabButtonPress(1),
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0))),
-                          child: const Text(
-                            "Posts",
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          PopUpContainer(
+            enableDrag: false,
+            enableHideOnTapShadow: false,
+            controller: controller,
+            animationDuration: animationDuration,
+            minHeight: HomeScreen.previousFragment[0] is ProfilePage
+                ? 0
+                : middleHeight - 0.1,
+            middleHeight: middleHeight,
+            maxHeight: middleHeight,
+            padding: const EdgeInsets.only(top: 15),
+            containerBgColor: CustomColor.mainBrown,
+            shadowBgColor: Colors.transparent,
           ),
-          Expanded(
-              child: PageView.builder(
-            controller: pageController,
-            onPageChanged: (value) => setState(() {
-              activePage = value;
-            }),
-            physics: const CustomPageViewScrollPhysics(),
-            itemCount: pages.length,
-            itemBuilder: (BuildContext context, int index) {
-              return pages[index % pages.length];
-            },
-          ))
         ],
-      ))),
+      )),
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:rockland/pages/home/profile.dart';
 import 'package:rockland/styles/colors.dart';
 
 class HomeScreen extends StatefulWidget {
+  static List<Widget> previousFragment = [];
   const HomeScreen({super.key});
 
   @override
@@ -16,21 +17,49 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController pageController = PageController(initialPage: 0);
+  final HomePageController homeController = HomePageController();
 
   int activePage = 0;
 
-  final List<Widget> pages = [
-    const HomePage(),
-    const DiscoverPage(),
-    const CameraPage(),
-    const NotificationPage(),
-    const ProfilePage(),
-  ];
+  final List<Widget> pages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // set controller to page 0 to show the subtitle beneath the
+    // navbar icon
+    pages.addAll([
+      HomePage(
+        controller: homeController,
+      ),
+      const DiscoverPage(),
+      const CameraPage(),
+      const NotificationPage(),
+      const ProfilePage()
+    ]);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onNavbarButtonPressed(0);
+    });
+  }
 
   void _onNavbarButtonPressed(int pageIndex) {
     setState(() {
       activePage = pageIndex;
-      pageController.jumpToPage(pageIndex);
+      List<Widget> history = HomeScreen.previousFragment;
+      history.add(pages[pageIndex]);
+      if (history.length > 2) {
+        HomeScreen.previousFragment = history.sublist(history.length - 2);
+      }
+      print(HomeScreen.previousFragment);
+      if (pageIndex == 4 && HomeScreen.previousFragment[0] is HomePage) {
+        homeController.hidePopup();
+        Future.delayed(
+            Duration(milliseconds: homeController.getAnimationDuration()), () {
+          pageController.jumpToPage(pageIndex);
+        });
+      } else {
+        pageController.jumpToPage(pageIndex);
+      }
     });
   }
 
@@ -54,9 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           )),
           Container(
+            height: MediaQuery.of(context).size.height * .08, // NAVBAR HEIGHT
             color: CustomColor.mainBrown,
             child: Padding(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

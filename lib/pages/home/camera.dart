@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rockland/components/button.dart';
-import 'package:rockland/tests/resizeable_drag.dart';
+import 'package:rockland/components/popup_container.dart';
+import 'package:rockland/screens/home.dart';
+import 'package:rockland/styles/colors.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -11,17 +12,53 @@ class CameraPage extends StatefulWidget {
 }
 
 class _CameraPageState extends State<CameraPage> {
-  ResizeDragController controller = ResizeDragController();
+  PopUpContainerController controller = PopUpContainerController();
+
+  @override
+  void initState() {
+    super.initState();
+    HomeScreen.previousFragment.add(const CameraPage());
+  }
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final double maxHeight = mediaQuery.size.height -
+        mediaQuery.size.height * .08 -
+        mediaQuery.padding.top;
+    final double middleHeight = mediaQuery.size.height / 2 + 100;
     return Scaffold(
-      body: ResizeDrag(
-        controller: controller,
-        middleHeight: MediaQuery.of(context).size.height / 2 + 100,
-        maxHeight: MediaQuery.of(context).size.height,
+      body: SafeArea(
+          child: Stack(
         children: [
-          Positioned(
+          Container(
+            color: CustomColor.mainBrown,
+            child: Center(
+              child: CommonButton(
+                onPressed: () {
+                  controller.showPopup();
+                },
+                buttonText: "Show popup",
+              ),
+            ),
+          ),
+          PopUpContainer(
+            controller: controller,
+            minHeight: 0,
+            middleHeight: middleHeight,
+            maxHeight: maxHeight,
+            padding: EdgeInsets.only(left: 25, right: 25, top: 25),
+            containerBgColor: CustomColor.mainBrown,
+            listBgColor: CustomColor.mainBrown,
+          ),
+        ],
+      )),
+    );
+  }
+}
+
+/*
+Positioned(
             left: 0,
             right: 0,
             top: 0,
@@ -36,8 +73,4 @@ class _CameraPageState extends State<CameraPage> {
               ),
             ),
           )
-        ],
-      ),
-    );
-  }
-}
+ */
