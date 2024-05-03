@@ -97,7 +97,8 @@ class PopUpContainerState extends State<PopUpContainer> {
     initialWidth = width;
   }
 
-  void onDrag(dx, dy, {canMaximise = true, canMinimise = true}) {
+  void onDrag(dx, dy,
+      {canMaximise = true, canMinimise = true, canMinimiseWhenever = false}) {
     if (!widget.enableDrag!) {
       return;
     }
@@ -114,7 +115,9 @@ class PopUpContainerState extends State<PopUpContainer> {
       // or container being dragged down when listview is scrolled down
       // and position is not 0
       if (!canMinimise || scrollController.position.pixels != 0.0) {
-        return;
+        if (!canMinimiseWhenever) {
+          return;
+        }
       }
     }
 
@@ -136,9 +139,7 @@ class PopUpContainerState extends State<PopUpContainer> {
     setState(() {
       isDragging = false;
     });
-    if (cumulativeDy < -100 &&
-        scrollController.position.pixels == 0.0 &&
-        height != initialHeight) {
+    if (cumulativeDy < -100) {
       // prevents container being dragged down when list
       // view is scrolled down and position is not 0
       setState(() {
@@ -220,7 +221,14 @@ class PopUpContainerState extends State<PopUpContainer> {
                 children: [
                   ContainerDragDetector(
                     onDragStart: onDragStart,
-                    onDrag: (dx, dy) => {onDrag(dx, dy, canMinimise: false)},
+                    onDrag: (dx, dy) => {
+                      onDrag(dx, dy,
+                          canMinimise: false,
+                          canMinimiseWhenever:
+                              scrollController.position.pixels != 0.0
+                                  ? true
+                                  : false)
+                    },
                     onDragEnd: onDragEnd,
                     child: SizedBox(
                       width: parentWidth,
@@ -240,7 +248,12 @@ class PopUpContainerState extends State<PopUpContainer> {
                       child: Padding(
                     padding: widget.padding!,
                     child: Container(
-                      color: widget.listBgColor,
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                          color: widget.listBgColor,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20))),
                       child: Padding(
                         padding: widget.padding!,
                         child: ListView(
