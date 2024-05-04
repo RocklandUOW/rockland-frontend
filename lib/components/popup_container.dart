@@ -26,6 +26,7 @@ class PopUpContainer extends StatefulWidget {
   final int? animationDuration;
   final bool? enableDrag;
   final bool? enableHideOnTapShadow;
+  final bool? enableDragIndicator;
   final EdgeInsets? padding;
   final Color? containerBgColor;
   final Color? listBgColor;
@@ -40,6 +41,7 @@ class PopUpContainer extends StatefulWidget {
       this.children,
       this.enableDrag = true,
       this.enableHideOnTapShadow = true,
+      this.enableDragIndicator = true,
       this.padding = EdgeInsets.zero,
       this.dragSmoothness = 80,
       this.animationDuration = 250,
@@ -132,16 +134,18 @@ class PopUpContainerState extends State<PopUpContainer> {
     });
   }
 
-  void onDragEnd(finalX, finalY) {
+  void onDragEnd(finalX, finalY, {canMinimiseWhenever = false}) {
     if (!widget.enableDrag!) {
       return;
     }
     setState(() {
       isDragging = false;
     });
-    if (cumulativeDy < -100) {
-      // prevents container being dragged down when list
-      // view is scrolled down and position is not 0
+    // the additional AND check prevents container being 
+    // dragged down when list view is scrolled down and
+    // position is not 0
+    if (cumulativeDy < -250 &&
+        (scrollController.position.pixels == 0.0 || canMinimiseWhenever)) {
       setState(() {
         if (height > widget.middleHeight) {
           height = widget.middleHeight;
@@ -219,31 +223,35 @@ class PopUpContainerState extends State<PopUpContainer> {
               onDragEnd: onDragEnd,
               child: Column(
                 children: [
-                  ContainerDragDetector(
-                    onDragStart: onDragStart,
-                    onDrag: (dx, dy) => {
-                      onDrag(dx, dy,
-                          canMinimise: false,
-                          canMinimiseWhenever:
-                              scrollController.position.pixels != 0.0
-                                  ? true
-                                  : false)
-                    },
-                    onDragEnd: onDragEnd,
-                    child: SizedBox(
-                      width: parentWidth,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 170),
-                        child: Container(
-                          height: 5,
-                          decoration: BoxDecoration(
-                              color: Colors.white70,
-                              borderRadius: BorderRadius.circular(5)),
+                  Visibility(
+                      visible: widget.enableDragIndicator! ? true : false,
+                      child: ContainerDragDetector(
+                        onDragStart: onDragStart,
+                        onDrag: (dx, dy) => {
+                          onDrag(dx, dy,
+                              canMinimise: false,
+                              canMinimiseWhenever:
+                                  scrollController.position.pixels != 0.0
+                                      ? true
+                                      : false)
+                        },
+                        onDragEnd: (finalX, finalY) {
+                          onDragEnd(finalX, finalY, canMinimiseWhenever: true);
+                        },
+                        child: SizedBox(
+                          width: parentWidth,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 170),
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                  color: Colors.white70,
+                                  borderRadius: BorderRadius.circular(5)),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+                      )),
                   Expanded(
                       child: Padding(
                     padding: widget.padding!,
