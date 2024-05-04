@@ -52,9 +52,12 @@ class CustomNavbarButtonState extends State<CustomNavbarButton> {
                   opacity:
                       widget.buttonIndex == widget.pageController.page ? 1 : 0,
                   duration: const Duration(milliseconds: 100),
-                  child: Text(
-                    widget.subtitle,
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                  child: IgnorePointer(
+                    child: Text(
+                      widget.subtitle,
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
                   ),
                 ),
               ))
