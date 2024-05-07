@@ -1,129 +1,61 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
-import 'package:rockland/screens/home.dart';
+import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/common.dart';
+
+class DiscoverPageController {
+  late Function() getListController;
+  late Function(double offset) setListControllerPosition;
+}
 
 class DiscoverPage extends StatefulWidget {
-  const DiscoverPage({super.key});
+  final DiscoverPageController? controller;
+
+  const DiscoverPage({super.key, this.controller});
 
   @override
   State<DiscoverPage> createState() => _DiscoverPageState();
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  Location locationController = Location();
-  static const LatLng googlePlex = LatLng(37.4223, -122.0848);
-  static const LatLng googlePlex2 = LatLng(37.4223, -122.1248);
-  static const LatLng googlePlex3 = LatLng(37.3923, -122.0848);
-  static const LatLng applePlex = LatLng(37.3346, -122.0090);
-  LatLng? currentPos;
-  late StreamSubscription<LocationData> locationChangedListener;
+  ScrollController listViewController =
+      ScrollController(initialScrollOffset: 0.0);
+
+  Future<void> onRefresh() async {
+    await Future.delayed(
+      const Duration(milliseconds: 200),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    HomeScreen.previousFragment.add(const DiscoverPage());
-    getLocation();
+    widget.controller!.getListController = getListController;
+    widget.controller!.setListControllerPosition =
+        setListControllerPosition;
   }
 
-  @override
-  void dispose() {
-    try {
-      locationChangedListener.cancel();
-    } catch (e) {}
-    super.dispose();
+  ScrollController getListController() {
+    return listViewController;
   }
 
-  void handleTap() {
-    Future.delayed(const Duration(milliseconds: 200), () {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return const Dialog(
-              elevation: 16,
-              child: Padding(
-                padding: EdgeInsets.all(25),
-                child: Text("Show uploaded rock info here\n"
-                    "Show uploaded rock info here"),
-              ),
-            );
-          });
-    });
+  void setListControllerPosition(double offset) {
+    listViewController.animateTo(offset,
+        duration: Common.duration250, curve: Curves.ease);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: currentPos == null
-          ? const Center(
-              child: Text("Loading..."),
-            )
-          : SafeArea(
-              child: GoogleMap(
-              initialCameraPosition:
-                  const CameraPosition(target: googlePlex, zoom: 13),
-              markers: {
-                Marker(
-                  markerId: const MarkerId("currentLoc"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: googlePlex,
-                  onTap: handleTap,
-                ),
-                Marker(
-                  markerId: const MarkerId("currentLoc2"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: googlePlex2,
-                  onTap: handleTap,
-                ),
-                Marker(
-                  markerId: const MarkerId("currentLoc3"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: googlePlex3,
-                  onTap: handleTap,
-                ),
-                Marker(
-                  markerId: const MarkerId("destLoc"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: applePlex,
-                  onTap: handleTap,
-                ),
-              },
-            )),
+      backgroundColor: CustomColor.mainBrown,
+      body: SafeArea(
+          child: RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView.builder(
+                itemCount: 25,
+                itemBuilder: (context, index) {
+                  return Text("data");
+                },
+              ))),
     );
-  }
-
-  Future<void> getLocation() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-
-    serviceEnabled = await locationController.serviceEnabled();
-    if (serviceEnabled) {
-      serviceEnabled = await locationController.requestService();
-    } else {
-      // TODO: handle error here relating to the service being unavailable.
-      return;
-    }
-
-    permissionGranted = await locationController.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await locationController.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        // TODO: handle error here informing the user that they need to grant loc perm.
-        return;
-      }
-    }
-
-    locationChangedListener =
-        locationController.onLocationChanged.listen((LocationData currentLoc) {
-      if (currentLoc.latitude != null &&
-          currentLoc.longitude != null &&
-          mounted) {
-        setState(() {
-          currentPos = LatLng(currentLoc.latitude!, currentLoc.longitude!);
-        });
-      }
-    });
   }
 }

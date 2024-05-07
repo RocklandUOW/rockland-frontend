@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController pageController = PageController(initialPage: 0);
   final HomePageController homeController = HomePageController();
+  final DiscoverPageController discoverController = DiscoverPageController();
 
   int activePage = 0;
 
@@ -32,7 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
       HomePage(
         controller: homeController,
       ),
-      const DiscoverPage(),
+      DiscoverPage(
+        controller: discoverController,
+      ),
       const CameraPage(),
       const NotificationPage(),
       const ProfilePage()
@@ -102,7 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   CustomNavbarButton(
                     icon: Icon(
-                      activePage == 1 ? Icons.map : Icons.map_outlined,
+                      activePage == 1
+                          ? Icons.people_alt
+                          : Icons.people_alt_outlined,
                       color: Colors.white,
                     ),
                     buttonIndex: 1,

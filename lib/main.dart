@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rockland/pages/gmaps.dart';
+import 'package:rockland/screens/home.dart';
 import 'package:rockland/screens/welcome.dart';
 import 'package:rockland/styles/colors.dart';
 
@@ -9,8 +9,7 @@ void main() {
     const SystemUiOverlayStyle(
       systemNavigationBarColor: CustomColor.mainBrown,
       systemNavigationBarIconBrightness: Brightness.light,
-      statusBarColor: CustomColor.mainBrown,
-      statusBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
     ),
   );
   runApp(const MyApp());
@@ -28,11 +27,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: CustomColor.mainBrown),
         useMaterial3: true,
         fontFamily: "Lato"
       ),
-      home: test1 ? const WelcomePage() : const GMapsPage(),
+      home: test1 ? const WelcomePage() : const HomeScreen(),
     );
   }
 }
