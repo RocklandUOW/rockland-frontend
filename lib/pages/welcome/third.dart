@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rockland/components/button.dart';
-import 'package:rockland/pages/gmaps.dart';
 import 'package:rockland/screens/account/login.dart';
 import 'package:rockland/screens/account/register.dart';
+import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 
@@ -98,7 +98,7 @@ class ThirdPage extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 5),
                         child: CommonButton(
                           onPressed: () => Activity.startActivity(
-                              context, const GMapsPage()),
+                              context, const HomeScreen()),
                           isText: true,
                           buttonText: "Skip for now. Take me to the app >",
                           size:

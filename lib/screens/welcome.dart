@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rockland/pages/first_launch/first.dart';
-import 'package:rockland/pages/first_launch/second.dart';
-import 'package:rockland/pages/first_launch/third.dart';
+import 'package:rockland/pages/welcome/first.dart';
+import 'package:rockland/pages/welcome/second.dart';
+import 'package:rockland/pages/welcome/third.dart';
 import 'package:rockland/utility/physics.dart';
 
 class WelcomePage extends StatefulWidget {
