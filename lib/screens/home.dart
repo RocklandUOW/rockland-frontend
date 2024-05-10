@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/components/navbar_button.dart';
 import 'package:rockland/pages/home/camera.dart';
 import 'package:rockland/pages/home/discover.dart';
@@ -6,19 +7,21 @@ import 'package:rockland/pages/home/homepage.dart';
 import 'package:rockland/pages/home/notification.dart';
 import 'package:rockland/pages/home/profile.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/common.dart';
 
 class HomeScreen extends StatefulWidget {
   static List<Widget> previousFragment = [];
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   final PageController pageController = PageController(initialPage: 0);
   final HomePageController homeController = HomePageController();
   final DiscoverPageController discoverController = DiscoverPageController();
+  late DismissableAlertDialog loading;
 
   int activePage = 0;
 
@@ -37,12 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: discoverController,
       ),
       const CameraPage(),
-      const NotificationPage(),
+      NotificationPage(
+        parentState: this,
+      ),
       const ProfilePage()
     ]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _onNavbarButtonPressed(0);
     });
+    loading = LoadingDialog.construct(context);
   }
 
   void _onNavbarButtonPressed(int pageIndex) {

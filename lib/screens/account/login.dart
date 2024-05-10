@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/components/textfield.dart';
 import 'package:rockland/screens/account/register.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
+import 'package:http/http.dart' as http;
+import 'package:rockland/utility/common.dart';
+import 'package:rockland/utility/strings.dart';
 
 class LoginAccount extends StatefulWidget {
   const LoginAccount({super.key});
@@ -17,11 +23,21 @@ class _LoginAccountState extends State<LoginAccount> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool customBackButtonPressed = false;
+  late DismissableAlertDialog loadingDialog;
+  late DismissableAlertDialog loginResult;
+
+  @override
+  void initState() {
+    super.initState();
+    loadingDialog = LoadingDialog.construct(context);
+    loginResult =
+        DismissableAlertDialog(context: context, child: const Text("Result"));
+  }
 
   void _activityHandler(BuildContext context) {
-    List<Widget> _history = Activity.history;
+    List<Widget> history = Activity.history;
     try {
-      if (_history[_history.length - 2] is RegisterAccount) {
+      if (history[history.length - 2] is RegisterAccount) {
         customBackButtonPressed = true;
         Activity.finishActivity(context);
       } else {
@@ -30,6 +46,47 @@ class _LoginAccountState extends State<LoginAccount> {
     } catch (e) {
       Activity.startActivity(context, const RegisterAccount());
     }
+  }
+
+  bool _emailValidator(String value) {
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$");
+    return emailRegex.hasMatch(value);
+  }
+
+  void handleSignIn() {
+    loadingDialog.show();
+    http
+        .post(Uri.parse("https://rockland-app-service.onrender.com/login/"),
+            headers: <String, String>{"Content-Type": "application/json"},
+            body: jsonEncode(<String, String>{
+              "email": emailController.text,
+              "password": passwordController.text
+            }))
+        .catchError((e) {
+          return http.Response(
+              jsonEncode(<String, String>{"detail": "connection error"}), 200);
+        })
+        .then((response) => jsonDecode(response.body) as Map<String, dynamic>)
+        .then((decoded) {
+          loadingDialog.dismiss();
+
+          String responseStr = decoded["detail"].toString().trim();
+
+          if (responseStr == ConnectionStrings.connectionErrResponse) {
+            loginResult
+                .setChild(const Text(ConnectionStrings.connectionErrString));
+          } else if (responseStr == LoginStrings.invalidAccountRes) {
+            loginResult.setChild(const Text(LoginStrings.invalidAccountStr));
+          } else if (responseStr == LoginStrings.invalidPasswordRes) {
+            loginResult.setChild(const Text(LoginStrings.invalidPasswordStr));
+          } else {
+            loginResult.setChild(Text(responseStr));
+          }
+
+          loginResult.setOkButton(TextButton(
+              onPressed: () => loginResult.dismiss(), child: const Text("OK")));
+          loginResult.show();
+        });
   }
 
   @override
@@ -42,7 +99,7 @@ class _LoginAccountState extends State<LoginAccount> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return PopScope(
         canPop: true,
@@ -102,16 +159,21 @@ class _LoginAccountState extends State<LoginAccount> {
                             height: 25,
                           ),
                           Form(
-                              key: _formKey,
+                              key: formKey,
                               child: Column(
                                 children: [
                                   CommonTextField(
-                                      controller: emailController,
-                                      hintText: "Email",
-                                      icon: const Icon(
-                                        Icons.email,
-                                        color: Colors.white,
-                                      )),
+                                    controller: emailController,
+                                    hintText: "Email",
+                                    icon: const Icon(
+                                      Icons.email,
+                                      color: Colors.white,
+                                    ),
+                                    validator: (value) => _emailValidator(
+                                            value!)
+                                        ? null
+                                        : "Please enter a valid email address",
+                                  ),
                                   const SizedBox(
                                     height: 25,
                                   ),
@@ -124,7 +186,10 @@ class _LoginAccountState extends State<LoginAccount> {
                                       icon: const Icon(
                                         Icons.key,
                                         color: Colors.white,
-                                      )),
+                                      ),
+                                      validator: (value) => value != ""
+                                          ? null
+                                          : "Password cannot be empty"),
                                   const SizedBox(
                                     height: 10,
                                   ),
@@ -135,12 +200,14 @@ class _LoginAccountState extends State<LoginAccount> {
                                         textAlign: TextAlign.center,
                                         text: const TextSpan(
                                           text: 'Forgot your password? ',
-                                          style: TextStyle(height: 1.5),
+                                          style: TextStyle(
+                                              height: 1.5,
+                                              color: Colors.white,
+                                              fontFamily: "Lato"),
                                           children: <TextSpan>[
                                             TextSpan(
                                                 text: 'Reset it',
                                                 style: TextStyle(
-                                                    color: Colors.white,
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ],
@@ -153,7 +220,11 @@ class _LoginAccountState extends State<LoginAccount> {
                                   ),
                                   CommonButton(
                                     onPressed: () {
-                                      _formKey.currentState!.validate();
+                                      bool valid =
+                                          formKey.currentState!.validate();
+                                      if (valid) {
+                                        handleSignIn();
+                                      }
                                     },
                                     buttonText: "Sign in",
                                     textColor: Colors.white,
@@ -217,19 +288,18 @@ class _LoginAccountState extends State<LoginAccount> {
                         textAlign: TextAlign.center,
                         text: const TextSpan(
                           text: 'By continuing, you agree to the ',
-                          style: TextStyle(height: 1.5),
+                          style: TextStyle(
+                              height: 1.5,
+                              color: Colors.white,
+                              fontFamily: "Lato"),
                           children: <TextSpan>[
                             TextSpan(
                                 text: 'Terms and Conditions ',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(text: 'and have read the '),
                             TextSpan(
                                 text: 'Privacy Policy ',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),

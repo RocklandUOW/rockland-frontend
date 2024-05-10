@@ -5,6 +5,11 @@
 - Almost fully styled discover page
 - Added loading indicator to load new posts in profile page
 - Added discover post thumbail template
+- Added view image screen
+- Merge pull request #4 from RocklandUOW/dev/feature/home-screen
+- Successfully integrated login, register, and upload post functionalities with the backend server
+- Added more statics to Common
+- Moved strings into a file to make things tidy
 
 ### 7/5/24
 

@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/components/textfield.dart';
 import 'package:rockland/screens/account/login.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
+import 'package:http/http.dart' as http;
+import 'package:rockland/utility/common.dart';
+import 'package:rockland/utility/strings.dart';
 
 class RegisterAccount extends StatefulWidget {
   const RegisterAccount({super.key});
@@ -21,6 +27,17 @@ class _RegisterAccountState extends State<RegisterAccount> {
   final passwordController = TextEditingController();
   final retypePasswordController = TextEditingController();
   bool customBackButtonPressed = false;
+  bool loading = false;
+  late DismissableAlertDialog loadingDialog;
+  late DismissableAlertDialog registerResult;
+
+  @override
+  void initState() {
+    super.initState();
+    loadingDialog = LoadingDialog.construct(context);
+    registerResult =
+        DismissableAlertDialog(context: context, child: const Text("Result"));
+  }
 
   bool _emailValidator(String value) {
     final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$");
@@ -34,9 +51,9 @@ class _RegisterAccountState extends State<RegisterAccount> {
   }
 
   void _activityHandler(BuildContext context) {
-    List<Widget> _history = Activity.history;
+    List<Widget> history = Activity.history;
     try {
-      if (_history[_history.length - 2] is LoginAccount) {
+      if (history[history.length - 2] is LoginAccount) {
         customBackButtonPressed = true;
         Activity.finishActivity(context);
       } else {
@@ -45,6 +62,46 @@ class _RegisterAccountState extends State<RegisterAccount> {
     } catch (e) {
       Activity.startActivity(context, const LoginAccount());
     }
+  }
+
+  void handleSignUp() {
+    loadingDialog.show();
+    http
+        .post(Uri.parse("https://rockland-app-service.onrender.com/register/"),
+            headers: <String, String>{"Content-Type": "application/json"},
+            body: jsonEncode(<String, String>{
+              "email": emailController.text,
+              "first_name": firstNameController.text,
+              "last_name": lastNameController.text,
+              "password": passwordController.text
+            }))
+        .catchError((e) {
+          return http.Response(
+              jsonEncode(<String, String>{"detail": "connection error"}), 200);
+        })
+        .then((response) => jsonDecode(response.body) as Map<String, dynamic>)
+        .then((decoded) {
+          loadingDialog.dismiss();
+
+          String responseStr = decoded["detail"].toString().trim();
+
+          if (responseStr == ConnectionStrings.connectionErrResponse) {
+            registerResult
+                .setChild(const Text(ConnectionStrings.connectionErrString));
+          } else if (responseStr == SignUpStrings.accountExistResponse) {
+            registerResult
+                .setChild(const Text(SignUpStrings.accountExistString));
+          } else if (responseStr == SignUpStrings.registrationFailedResponse) {
+            registerResult.setChild(const Text(SignUpStrings.failedString));
+          } else {
+            registerResult.setChild(const Text(SignUpStrings.successString));
+          }
+
+          registerResult.setOkButton(TextButton(
+              onPressed: () => registerResult.dismiss(),
+              child: const Text("OK")));
+          registerResult.show();
+        });
   }
 
   @override
@@ -60,7 +117,7 @@ class _RegisterAccountState extends State<RegisterAccount> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return PopScope(
         canPop: true,
@@ -120,7 +177,7 @@ class _RegisterAccountState extends State<RegisterAccount> {
                             height: 25,
                           ),
                           Form(
-                              key: _formKey,
+                              key: formKey,
                               child: Column(
                                 children: [
                                   CommonTextField(
@@ -208,7 +265,11 @@ class _RegisterAccountState extends State<RegisterAccount> {
                                   ),
                                   CommonButton(
                                     onPressed: () {
-                                      _formKey.currentState!.validate();
+                                      bool valid =
+                                          formKey.currentState!.validate();
+                                      if (valid) {
+                                        handleSignUp();
+                                      }
                                     },
                                     buttonText: "Sign up",
                                     textColor: Colors.white,
@@ -226,19 +287,20 @@ class _RegisterAccountState extends State<RegisterAccount> {
                             textAlign: TextAlign.center,
                             text: const TextSpan(
                               text: 'By continuing, you agree to the ',
-                              style: TextStyle(height: 1.5),
+                              style: TextStyle(
+                                  height: 1.5,
+                                  color: Colors.white,
+                                  fontFamily: "Lato"),
                               children: <TextSpan>[
                                 TextSpan(
                                     text: 'Terms and Conditions ',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                                 TextSpan(text: 'and have read the '),
                                 TextSpan(
                                     text: 'Privacy Policy ',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold)),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
@@ -262,14 +324,16 @@ class _RegisterAccountState extends State<RegisterAccount> {
                         textAlign: TextAlign.center,
                         text: TextSpan(
                           text: 'Already have an account? ',
-                          style: const TextStyle(height: 1.5),
+                          style: const TextStyle(
+                              height: 1.5,
+                              color: Colors.white,
+                              fontFamily: "Lato"),
                           children: <TextSpan>[
                             TextSpan(
                                 text: 'Sign in ',
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () => _activityHandler(context),
                                 style: const TextStyle(
-                                    color: Colors.white,
                                     fontWeight: FontWeight.bold)),
                           ],
                         ),
