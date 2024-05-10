@@ -287,25 +287,36 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
                           Padding(
                             padding: const EdgeInsets.only(left: 2, right: 2),
                             child: GridView.builder(
-                              itemCount: 15,
+                              itemCount: 18,
                               itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
-                                    Activity.startActivity(
-                                        context, const PostPage());
-                                  },
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.transparent,
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                                  "lib/images/LogoUpscaled.png")
-                                              as ImageProvider,
-                                          fit: BoxFit.cover),
+                                if (index < 18 - 3) {
+                                  return InkWell(
+                                    onTap: () {
+                                      Activity.startActivity(
+                                          context, const PostPage());
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                    "lib/images/LogoUpscaled.png")
+                                                as ImageProvider,
+                                            fit: BoxFit.cover),
+                                      ),
+                                      height: 24,
                                     ),
-                                    height: 24,
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: EdgeInsets.all(55),
+                                    child: CircularProgressIndicator(
+                                      color: index == 18 - 2
+                                          ? CustomColor.extremelyLightBrown
+                                          : Colors.transparent,
+                                    ),
+                                  );
+                                }
                               },
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
