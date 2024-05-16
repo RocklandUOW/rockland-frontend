@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/screens/image.dart';
-import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 
 class PostThumbnailDiscover extends StatefulWidget {

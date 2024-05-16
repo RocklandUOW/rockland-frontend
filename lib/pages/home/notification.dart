@@ -10,6 +10,7 @@ import 'package:rockland/utility/common.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:rockland/utility/strings.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class NotificationPage extends StatefulWidget {
   final HomeScreenState? parentState;
@@ -62,6 +63,10 @@ class _NotificationPageState extends State<NotificationPage> {
     sendPost.fields["description"] = "found this andesite on UOW building 41";
     sendPost.fields["latitude"] = "-34.4067433";
     sendPost.fields["longitude"] = "150.8790018";
+    sendPost.files.add(http.MultipartFile.fromString("hashtags", "memek1"));
+    sendPost.files.add(http.MultipartFile.fromString("hashtags", "memek2"));
+    sendPost.files.add(http.MultipartFile.fromString("hashtags", "memek3"));
+    sendPost.files.add(http.MultipartFile.fromString("hashtags", "memek4"));
     try {
       http.StreamedResponse send = await sendPost.send();
       http.Response response = await http.Response.fromStream(send);
@@ -82,34 +87,40 @@ class _NotificationPageState extends State<NotificationPage> {
     http
         .post(
             Uri.parse(
-                "https://rockland-app-service.onrender.com/get_post_by_user_id/"),
+                "https://rockland-app-service.onrender.com/get_posts_by_user_id/"),
             headers: <String, String>{"Content-Type": "application/json"},
             body:
                 jsonEncode(<String, String>{"id": "663b8a943231c2bdd950335e"}))
         .catchError((e) {
-          return http.Response(jsonEncode(["connection error"]), 200);
-        })
-        .then((response) => jsonDecode(response.body))
-        .then((decoded) {
-          widget.parentState?.loading.dismiss();
+      return http.Response(jsonEncode(["connection error"]), 200);
+    }).then((response) {
+      widget.parentState?.loading.dismiss();
+      final body = jsonDecode(response.body);
 
-          if ((decoded as List).isEmpty) {
-            postResult
-                .setChild(const Text("User has not posted anything yet."));
-          } else if (decoded[0] == ConnectionStrings.connectionErrResponse) {
-            postResult
-                .setChild(const Text(ConnectionStrings.connectionErrString));
-          } else {
-            posts.addAll(decoded);
-            postResult.setChild(Text("${posts.map((e) {
-              return "[${e["rocktype"]}\n ${e["description"]}\n ${e["picture_url"].map((e) => e)}\n ${e["latitude"]}] ${e["longitude"]}] ${e["hashtags"]}] ${e["comments"]}] ${e["verifications"]}] ${e["liked"]}]\n\n";
-            })}"));
-          }
+      if (response.statusCode == 200) {
+        if ((body as List).isEmpty) {
+          postResult.setChild(const Text("User has not posted anything yet."));
+        } else if (body[0] == ConnectionStrings.connectionErrResponse) {
+          postResult
+              .setChild(const Text(ConnectionStrings.connectionErrString));
+        } else {
+          posts.addAll(body);
+          postResult.setChild(Text("${posts.map((e) {
+            return "[${e["rocktype"]}\n ${e["description"]}\n ${e["picture_url"].map((e) => e)}\n ${e["latitude"]}] ${e["longitude"]}] ${e["hashtags"]}] ${e["liked"]}]\n\n";
+          })}"));
+        }
+      } else {
+        postResult.setChild(const Text(ConnectionStrings.internalServerError));
+        postResult.setCancelButton(TextButton(
+            onPressed: () async =>
+                await launchUrlString("mailto:${CommonStrings.email}"),
+            child: const Text("Contact us")));
+      }
 
-          postResult.setOkButton(TextButton(
-              onPressed: () => postResult.dismiss(), child: const Text("OK")));
-          postResult.show();
-        });
+      postResult.setOkButton(TextButton(
+          onPressed: () => postResult.dismiss(), child: const Text("OK")));
+      postResult.show();
+    });
   }
 
   @override

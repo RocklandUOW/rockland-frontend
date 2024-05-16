@@ -5,6 +5,7 @@ class DismissableAlertDialog {
   Widget child;
   Widget? okButton;
   Widget? cancelButton;
+  bool isShowing;
   final BuildContext context;
   final String? title;
   final double? elevation;
@@ -17,9 +18,11 @@ class DismissableAlertDialog {
       this.okButton,
       this.cancelButton,
       this.elevation = 24,
+      this.isShowing = false,
       this.barrierDismissable = true});
 
   Future<void> show() {
+    isShowing = true;
     List<Widget> actions = [];
     cancelButton != null ? actions.add(cancelButton!) : null;
     okButton != null ? actions.add(okButton!) : null;
@@ -47,6 +50,7 @@ class DismissableAlertDialog {
   }
 
   void dismiss() {
+    isShowing = false;
     Navigator.pop(context);
   }
 

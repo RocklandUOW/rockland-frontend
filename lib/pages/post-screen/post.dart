@@ -35,7 +35,7 @@ class _PostPageState extends State<PostPage> {
               style: TextStyle(
                 color: Colors.white,
               )),
-          backgroundColor: CustomColor.secondaryBrown,
+          backgroundColor: CustomColor.mainBrown,
           leading: IconButton(
             onPressed: () {},
             icon: const Icon (
@@ -59,7 +59,7 @@ class _PostPageState extends State<PostPage> {
             children: [
               // profile bar
               Container(
-                color: CustomColor.tertiaryBrown,
+                color: CustomColor.mainBrown,
                 child: Row(
                   children: [
                     // profile picture

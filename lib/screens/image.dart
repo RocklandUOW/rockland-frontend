@@ -27,7 +27,7 @@ class _ViewImageExtendedState extends State<ViewImageExtended> {
             style: TextStyle(
               color: Colors.white,
             )),
-        backgroundColor: CustomColor.brownMostRecent,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
             onPressed: () {},
             icon: const Icon(
@@ -37,8 +37,8 @@ class _ViewImageExtendedState extends State<ViewImageExtended> {
       ),
       body: PageView.builder(
         physics: _enablePaging
-            ? CustomPageViewScrollPhysics()
-            : NeverScrollableScrollPhysics(),
+            ? const CustomPageViewScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
         itemCount: 3,
         itemBuilder: (context, index) {
           return Container(
@@ -47,13 +47,13 @@ class _ViewImageExtendedState extends State<ViewImageExtended> {
             color: CustomColor.mainBrown,
             child: DoubleTappableInteractiveViewer(
               onScaleChanged: (scale) {
-                print(scale);
                 setState(() {
-                  // floor to ensure the scale is 1 when it's 1.
                   _enablePaging = scale <= 1.0;
                 });
               },
               scaleDuration: Common.duration250,
+              maxZoomScale: 5,
+              maxZoomedAmount: 1,
               child: Image.asset("lib/images/LogoUpscaled.png"),
             ),
           );
@@ -77,7 +77,7 @@ class DoubleTappableInteractiveViewer extends StatefulWidget {
     super.key,
     this.scale = 2,
     this.curve = Curves.fastLinearToSlowEaseIn,
-    this.maxZoomedAmount = 3,
+    this.maxZoomedAmount = 1,
     this.maxZoomScale = 15,
     this.incrementZoom = 2,
     this.onScaleChanged,
@@ -96,6 +96,7 @@ class _DoubleTappableInteractiveViewerState
   late AnimationController _animationController;
   Animation<Matrix4>? _zoomAnimation;
   late TransformationController _transformationController;
+  late TransformationController _transformationControllerScaleHolder;
   TapDownDetails? _doubleTapDetails;
   late double zoomedAmount;
   late double currentZoom;
@@ -104,6 +105,7 @@ class _DoubleTappableInteractiveViewerState
   void initState() {
     super.initState();
     _transformationController = TransformationController();
+    _transformationControllerScaleHolder = TransformationController();
     _animationController = AnimationController(
       vsync: this,
       duration: widget.scaleDuration,
@@ -116,6 +118,7 @@ class _DoubleTappableInteractiveViewerState
 
   @override
   void dispose() {
+    _transformationControllerScaleHolder.dispose();
     _transformationController.dispose();
     _animationController.dispose();
     super.dispose();
@@ -127,11 +130,15 @@ class _DoubleTappableInteractiveViewerState
 
   void _handleDoubleTap() {
     late Matrix4 newValue;
-    if (zoomedAmount < widget.maxZoomedAmount) {
+    print("memek");
+    print(_transformationController.value.getMaxScaleOnAxis());
+    print(_transformationController.value.getMaxScaleOnAxis() <= 1.0);
+    if (zoomedAmount < widget.maxZoomedAmount &&
+        _transformationController.value.getMaxScaleOnAxis() <= 1.0) {
       if (zoomedAmount == widget.maxZoomedAmount - 1) {
-        newValue = _applyZoom(widget.maxZoomScale, zoomedAmount);
+        newValue = _applyZoom(widget.maxZoomScale);
       } else {
-        newValue = _applyZoom(currentZoom, zoomedAmount);
+        newValue = _applyZoom(currentZoom);
       }
       zoomedAmount += 1;
       currentZoom += widget.incrementZoom;
@@ -140,6 +147,9 @@ class _DoubleTappableInteractiveViewerState
       zoomedAmount = 0;
       currentZoom = widget.incrementZoom;
     }
+
+    _transformationControllerScaleHolder.value = newValue;
+
     _zoomAnimation = Matrix4Tween(
       begin: _transformationController.value,
       end: newValue,
@@ -147,25 +157,17 @@ class _DoubleTappableInteractiveViewerState
     _animationController.forward(from: 0);
 
     if (widget.onScaleChanged != null) {
-      late double cScale;
-      print(zoomedAmount);
-      if (zoomedAmount == 0) {
-        cScale = 1;
-      } else {
-        cScale = _transformationController.value.getMaxScaleOnAxis();
-      }
-      widget.onScaleChanged!(cScale);
+      widget.onScaleChanged!(
+          _transformationControllerScaleHolder.value.getMaxScaleOnAxis());
     }
   }
 
-  Matrix4 _applyZoom(double scale, double currentZoomAmount) {
+  Matrix4 _applyZoom(double scale) {
     final tapPosition = _doubleTapDetails!.localPosition;
-    final translationCorrection = scale - 1;
+    final x = -tapPosition.dx * (scale - 1);
+    final y = -tapPosition.dy * (scale - 1);
     final zoomed = Matrix4.identity()
-      ..translate(
-        -tapPosition.dx * translationCorrection,
-        -tapPosition.dy * translationCorrection,
-      )
+      ..translate(x, y)
       ..scale(scale);
     return zoomed;
   }

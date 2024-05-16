@@ -28,4 +28,34 @@ class ConnectionStrings {
       "Failed to establish a connection to the server. Please check your internet connection.";
   static const String unknownErrorString =
       "Something nasty happened to either the connection or the server";
+  static const String internalServerError =
+      "A server error has occured, we sincerely apologise for the inconvenience. Please inform us about this situation immediately.";
+}
+
+class PermissionStrings {
+  static const mediaPermissionDenied =
+      "You have denied access to your photos. Captured photos will not be saved to your gallery. "
+      "If you change your mind, you can manually enable the permission from Android app settings.";
+}
+
+class RockIdentificationStrings {
+  static const notIdentifiedResponse = "Not_A_Rock";
+  static const notIdentified =
+      "Sorry! We didn't find any match for the rock you've just captured. Please clean your camera lenses and "
+      "make sure there is enough light in the photo. If we still can't identify, there's a possibility that "
+      "the rock is not recorded in our database yet. Remember, no cheating by taking a photo from the web!";
+  static const identifying =
+      "We're identifying the captured rock, please wait...";
+}
+
+class CommonStrings {
+  static const contactUs = "Contact us";
+  static const tryAgain = "Try again";
+  static const email = "therocklandproject@gmail.com";
+  static const loremIpsum =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum feugiat at tortor ac malesuada. Phasellus sit amet arcu vehicula justo volutpat faucibus vitae vitae urna. Etiam id justo a est aliquet volutpat. Aenean varius nulla nulla, sed posuere est egestas non. Vestibulum luctus augue ut enim rutrum egestas.";
+  static const loremIpsumExtension =
+      " Pellentesque nec orci quam. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In tincidunt, ante vitae semper tempus, lectus dui mattis nibh, nec posuere mi tellus sit amet tellus. Quisque mattis, est vitae lobortis molestie, magna tellus consequat eros, et ultrices est arcu at justo.";
+  static const loremIpsumExtension2 =
+      " Duis nibh arcu, hendrerit non sagittis quis, rhoncus vitae justo. Sed ut placerat eros. Integer ac ullamcorper est. Nam at est posuere, accumsan mi id, dignissim metus. Etiam dignissim tincidunt tellus et accumsan. Etiam lorem tortor, mattis ac ullamcorper et, hendrerit ac est.";
 }

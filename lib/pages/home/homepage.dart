@@ -55,8 +55,7 @@ class HomePageState extends State<HomePage> {
     final parentHeight = mediaQuery.size.height;
 
     return Scaffold(
-      body: SafeArea(
-          child: Stack(
+      body: Stack(
         children: [
           ProfilePageBuilder(
             profileBuilderController: pbcontroller,
@@ -252,7 +251,7 @@ class HomePageState extends State<HomePage> {
             ],
           ),
         ],
-      )),
+      ),
     );
   }
 }

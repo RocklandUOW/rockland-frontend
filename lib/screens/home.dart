@@ -21,6 +21,7 @@ class HomeScreenState extends State<HomeScreen> {
   final PageController pageController = PageController(initialPage: 0);
   final HomePageController homeController = HomePageController();
   final DiscoverPageController discoverController = DiscoverPageController();
+  final CameraPageController cameraController = CameraPageController();
   late DismissableAlertDialog loading;
 
   int activePage = 0;
@@ -39,7 +40,9 @@ class HomeScreenState extends State<HomeScreen> {
       DiscoverPage(
         controller: discoverController,
       ),
-      const CameraPage(),
+      CameraPage(
+        controller: cameraController,
+      ),
       NotificationPage(
         parentState: this,
       ),
@@ -82,6 +85,7 @@ class HomeScreenState extends State<HomeScreen> {
             physics: const NeverScrollableScrollPhysics(),
             controller: pageController,
             onPageChanged: (int value) {
+              WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
               setState(() {
                 activePage = value;
               });
@@ -119,17 +123,40 @@ class HomeScreenState extends State<HomeScreen> {
                     buttonIndex: 1,
                     subtitle: "Discover",
                     pageController: pageController,
-                    onPressed: () => _onNavbarButtonPressed(1),
+                    onPressed: () {
+                      _onNavbarButtonPressed(1);
+                      // trycatch to prevent app crash when function is not
+                      // initialised yet
+                      try {
+                        final scrollController =
+                            discoverController.getListController();
+                        if (scrollController.hasClients) {
+                          discoverController.setListControllerPosition(0.0);
+                        }
+                      } catch (_) {}
+                    },
                   ),
                   CustomNavbarButton(
-                    icon: const Icon(
-                      Icons.camera_alt_outlined,
+                    icon: Icon(
+                      activePage == 2
+                          ? Icons.camera_alt
+                          : Icons.camera_alt_outlined,
                       color: Colors.white,
                     ),
                     buttonIndex: 2,
-                    subtitle: "Camera",
+                    subtitle: "Identify",
                     pageController: pageController,
-                    onPressed: () => _onNavbarButtonPressed(2),
+                    onPressed: () async {
+                      _onNavbarButtonPressed(2);
+                      // trycatch to prevent app crash when function is not
+                      // initialised yet
+                      try {
+                        if (activePage == 2) {
+                          // await to prevent disposed setstate error
+                          await cameraController.takePhoto!();
+                        }
+                      } catch (_) {}
+                    },
                   ),
                   CustomNavbarButton(
                     icon: Icon(

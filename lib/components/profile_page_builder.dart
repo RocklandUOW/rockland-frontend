@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/pages/post-screen/post.dart';
+import 'package:rockland/screens/settings.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
@@ -55,10 +56,13 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
     final double parentHeight = mediaQuery.size.height;
     final double parentWidth = mediaQuery.size.width;
     final double middleHeight = parentHeight / 2 + 90;
+    final double safeAreaPadding = mediaQuery.padding.top;
+
+    print("skdjkdj");
+    print(safeAreaPadding);
 
     return Scaffold(
-      body: SafeArea(
-          child: Stack(
+      body: Stack(
         children: [
           Positioned(
               top: 0,
@@ -67,7 +71,7 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
               child: AnimatedContainer(
                 height: 280,
                 transform: Matrix4.identity()
-                  ..translate(0.0, isProfilePage ? -30.0 : -50.0),
+                  ..translate(0.0, isProfilePage ? 0.0 : -15.0),
                 color: CustomColor.fifthBrown,
                 duration: Common.duration250,
                 curve: Curves.ease,
@@ -92,7 +96,7 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
                             filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.0)),
+                                  color: Colors.black.withOpacity(0.0)),
                             ),
                           ),
                         ),
@@ -110,7 +114,7 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
                     AnimatedContainer(
                       duration: Common.duration250,
                       transform: Matrix4.identity()
-                        ..translate(0.0, isProfilePage ? 25.0 : 5.0),
+                        ..translate(0.0, isProfilePage ? 25.0 : 10.0),
                       alignment: Alignment.centerLeft,
                       curve: Curves.ease,
                       child: Padding(
@@ -187,7 +191,10 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
                                 opacity: isProfilePage ? 1 : 0,
                                 duration: Common.duration100,
                                 child: CommonButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Activity.startActivity(
+                                        context, const SettingsScreen());
+                                  },
                                   isIcon: true,
                                   size: const Size(40, 40),
                                   backgroundColor: Colors.transparent,
@@ -335,7 +342,7 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
             ),
           )
         ],
-      )),
+      ),
     );
   }
 }
