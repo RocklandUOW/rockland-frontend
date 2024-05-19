@@ -59,7 +59,7 @@ class _NotificationPageState extends State<NotificationPage> {
       sendPost.files.add(imgFile);
     }
     sendPost.fields["user_id"] = "663b8a943231c2bdd950335e";
-    sendPost.fields["rocktype"] = "andesite";
+    sendPost.fields["rocktype"] = "pyrite";
     sendPost.fields["description"] = "found this andesite on UOW building 41";
     sendPost.fields["latitude"] = "-34.4067433";
     sendPost.fields["longitude"] = "150.8790018";
@@ -128,79 +128,80 @@ class _NotificationPageState extends State<NotificationPage> {
     double parentHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: CustomColor.mainBrown,
-      body: SafeArea(
-          child: Container(
-        decoration: CommonStyles.commonBorder,
-        alignment: Alignment.center,
-        height: parentHeight,
-        child: Padding(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 200,
-              ),
-              const Text(
-                "Post test",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "rocktype: andesite",
-                style: CommonStyles.commonTextStyle,
-              ),
-              Text(
-                "description: found this andesite on UOW building 41",
-                style: CommonStyles.commonTextStyle,
-              ),
-              Text(
-                "latitude: -34.4067433",
-                style: CommonStyles.commonTextStyle,
-              ),
-              Text(
-                "longitude: 150.8790018",
-                style: CommonStyles.commonTextStyle,
-              ),
-              Text(
-                "user_id: 663b8a943231c2bdd950335e",
-                style: CommonStyles.commonTextStyle,
-              ),
-              Text(
-                "files: [${images.map((e) => e.path)}]\nlength:${images.length}",
-                style: CommonStyles.commonTextStyle,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CommonButton(
-                onPressed: selectImages,
-                buttonText:
-                    "Select images (will be changed to only use camera later)",
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CommonButton(
-                onPressed: addPost,
-                buttonText: "Send post",
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CommonButton(
-                onPressed: getPostById,
-                buttonText: "Get post by user id",
-              )
-            ],
-          ),
-        ),
-      )),
-    );
+        backgroundColor: CustomColor.mainBrown,
+        body: SafeArea(
+          child: Container(),
+          //     child: Container(
+          //   decoration: CommonStyles.commonBorder,
+          //   alignment: Alignment.center,
+          //   height: parentHeight,
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(25),
+          //     child: Column(
+          //       children: [
+          //         const SizedBox(
+          //           height: 200,
+          //         ),
+          //         const Text(
+          //           "Post test",
+          //           style: TextStyle(
+          //               color: Colors.white,
+          //               fontWeight: FontWeight.bold,
+          //               fontSize: 18),
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         Text(
+          //           "rocktype: andesite",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         Text(
+          //           "description: found this andesite on UOW building 41",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         Text(
+          //           "latitude: -34.4067433",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         Text(
+          //           "longitude: 150.8790018",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         Text(
+          //           "user_id: 663b8a943231c2bdd950335e",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         Text(
+          //           "files: [${images.map((e) => e.path)}]\nlength:${images.length}",
+          //           style: CommonStyles.commonTextStyle,
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         CommonButton(
+          //           onPressed: selectImages,
+          //           buttonText:
+          //               "Select images (will be changed to only use camera later)",
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         CommonButton(
+          //           onPressed: addPost,
+          //           buttonText: "Send post",
+          //         ),
+          //         const SizedBox(
+          //           height: 10,
+          //         ),
+          //         CommonButton(
+          //           onPressed: getPostById,
+          //           buttonText: "Get post by user id",
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // )),
+        ));
   }
 }

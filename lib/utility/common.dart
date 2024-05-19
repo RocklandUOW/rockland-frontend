@@ -1,6 +1,10 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/model.dart';
+import 'package:rockland/utility/strings.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -8,6 +12,33 @@ extension StringExtension on String {
       return "";
     }
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+
+  String removeExtraSpaces() {
+    return replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
+
+  String capitalizeWord() {
+    return split(' ').map((word) {
+      if (word.isEmpty) return '';
+      return '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}';
+    }).join(' ');
+  }
+}
+
+class ErrorBuilder {
+  static Error build(int code) {
+    String description;
+    if (code == 999) {
+      description = ConnectionStrings.connectionErrString;
+    } else if (code == 504) {
+      description =
+          "Server is currently under maintenance, please try again later. If the server has been down for a long time, please inform us.";
+    } else {
+      description =
+          "An uknown error has occured. Please inform us about this immediately.";
+    }
+    return Error(errorCode: code, description: description);
   }
 }
 
@@ -57,3 +88,4 @@ class LoadingDialog {
     );
   }
 }
+

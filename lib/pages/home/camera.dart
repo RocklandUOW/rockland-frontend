@@ -10,6 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/components/camera_page_builder.dart';
 import 'package:rockland/components/popup_container.dart';
+import 'package:rockland/components/rock_info.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/common.dart';
@@ -27,8 +28,9 @@ class CameraPageController {
 
 class CameraPage extends StatefulWidget {
   final CameraPageController? controller;
+  final HomeScreenState? parentState;
 
-  const CameraPage({super.key, this.controller});
+  const CameraPage({super.key, this.controller, this.parentState});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -147,13 +149,14 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     // more tedious to do so rather than directly resizing it
     // through image picker
     XFile? taken = await imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: ImageSource.camera,
         maxWidth: 1440,
         maxHeight: 1440,
         imageQuality: 80);
 
     if (taken != null) {
       setState(() {
+        widget.parentState?.postImages = [File(taken.path)];
         firstPhoto = taken;
         isFirstOpen = false;
         isLoading = true;
@@ -176,11 +179,33 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         predict.files.add(imgFile);
 
         // send
-        http.StreamedResponse post = await predict.send();
-        http.Response response = await http.Response.fromStream(post);
-        dynamic formattedResponse = await jsonDecode(response.body);
-        // String identifiedRock = formattedResponse["class_name"];
-        String identifiedRock = "opal";
+        dynamic formattedResponse;
+        try {
+          http.StreamedResponse post = await predict.send();
+          http.Response response = await http.Response.fromStream(post);
+          if (response.statusCode == 200) {
+            formattedResponse = await jsonDecode(response.body);
+          } else if (response.statusCode == 504) {
+            // gateway time out -> docker is not up
+            throw internalErr = Error(
+              errorCode: response.statusCode,
+              description:
+                  "Gateway time out on rock prediction service. There's a possibility that the Docker container is not yet running.",
+            );
+          } else {
+            throw internalErr = Error(
+              errorCode: response.statusCode,
+              description:
+                  "Error happened on the rock prediction service with the error code as stated.",
+            );
+          }
+        } catch (e) {
+          throw internalErr = Error(errorCode: 999, description: e.toString());
+        }
+
+        String identifiedRock = formattedResponse["class_name"];
+        print(identifiedRock);
+        // String identifiedRock = "opal";
 
         if (identifiedRock != RockIdentificationStrings.notIdentifiedResponse) {
           final req = await http.post(
@@ -193,7 +218,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           ).catchError((e) {
             return http.Response(
                 jsonEncode(
-                  <String, String>{"detail": "connection error"},
+                  <String, String>{"detail": e.toString()},
                 ),
                 999);
           });
@@ -201,15 +226,20 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           if (req.statusCode == 200) {
             setState(() {
               rock = Rock.fromJson(jsonDecode(req.body));
+              // TODO: set first name and last name to be the credit
+              (rock!.rock["images"] as List<dynamic>).add({
+                "credit": "insert first name last name here",
+                "link": taken.path
+              });
               isLoading = false;
               isIdentified = true;
             });
           } else if (req.statusCode == 999) {
-            throw error = Error(
-                errorCode: 999,
+            throw internalErr = Error(
+                errorCode: req.statusCode,
                 description: ConnectionStrings.connectionErrString);
           } else {
-            throw error = Error(
+            throw internalErr = Error(
                 errorCode: req.statusCode,
                 description: ConnectionStrings.unknownErrorString);
           }
@@ -270,9 +300,12 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
               : isLoading
                   ? CameraPageBuilder.whenLoading()
                   : hasError
-                      ? [Placeholder()]
+                      ? [
+                          Text(internalErr!.errorCode.toString()),
+                          Text(internalErr!.description),
+                        ]
                       : isIdentified
-                          ? [WhenIdentified(identifiedRock: rock!)]
+                          ? [RockInformation(identifiedRock: rock!)]
                           : CameraPageBuilder.whenNotIdentified(takePhoto),
         ),
       ),

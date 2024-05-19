@@ -9,6 +9,8 @@ https://stackoverflow.com/questions/53692798/flutter-calling-child-class-functio
 class PopUpContainerController {
   late void Function() showPopup;
   late void Function() hidePopup;
+  late void Function(Duration duration, Curve curve) animateToTop;
+  late void Function(Duration duration, Curve curve) animateToBottom;
 }
 
 /*
@@ -18,6 +20,8 @@ link: https://stackoverflow.com/questions/60924384/creating-resizable-view-that
 */
 class PopUpContainer extends StatefulWidget {
   final List<Widget>? children;
+  final List<Widget>? topChildren;
+  final List<Widget>? bottomChildren;
   final PopUpContainerController? controller;
   final double minHeight;
   final double middleHeight;
@@ -39,6 +43,8 @@ class PopUpContainer extends StatefulWidget {
       required this.maxHeight,
       this.controller,
       this.children,
+      this.topChildren,
+      this.bottomChildren,
       this.enableDrag = true,
       this.enableHideOnTapShadow = true,
       this.enableDragIndicator = true,
@@ -74,6 +80,8 @@ class PopUpContainerState extends State<PopUpContainer> {
     super.initState();
     widget.controller?.showPopup = showPopup;
     widget.controller?.hidePopup = hidePopup;
+    widget.controller?.animateToTop = animateToTop;
+    widget.controller?.animateToBottom = animateToBottom;
     setState(() {
       height = widget.minHeight;
     });
@@ -89,6 +97,26 @@ class PopUpContainerState extends State<PopUpContainer> {
     setState(() {
       height = 0;
     });
+  }
+
+  void animateToTop(Duration duration, Curve curve) {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: duration,
+        curve: curve,
+      );
+    }
+  }
+
+  void animateToBottom(Duration duration, Curve curve) {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: duration,
+        curve: curve,
+      );
+    }
   }
 
   void onDragStart(initialX, initialY) {
@@ -141,7 +169,7 @@ class PopUpContainerState extends State<PopUpContainer> {
     setState(() {
       isDragging = false;
     });
-    // the additional AND check prevents container being 
+    // the additional AND check prevents container being
     // dragged down when list view is scrolled down and
     // position is not 0
     if (cumulativeDy < -250 &&
@@ -252,6 +280,14 @@ class PopUpContainerState extends State<PopUpContainer> {
                           ),
                         ),
                       )),
+                  SizedBox(
+                    width: parentWidth,
+                    child: Column(
+                      children: [
+                        ...?widget.topChildren,
+                      ],
+                    ),
+                  ),
                   Expanded(
                       child: Padding(
                     padding: widget.padding!,
@@ -259,7 +295,7 @@ class PopUpContainerState extends State<PopUpContainer> {
                       clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
                           color: widget.listBgColor,
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20))),
                       child: Padding(
@@ -272,7 +308,15 @@ class PopUpContainerState extends State<PopUpContainer> {
                         ),
                       ),
                     ),
-                  ))
+                  )),
+                  SizedBox(
+                    width: parentWidth,
+                    child: Column(
+                      children: [
+                        ...?widget.bottomChildren,
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),

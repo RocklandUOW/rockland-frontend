@@ -50,38 +50,38 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: CustomColor.mainBrown,
       body: Stack(
         children: [
-          RefreshIndicator(
-              onRefresh: onRefresh,
-              child: ListView.builder(
-                controller: listViewController,
-                itemCount: 1 + 2,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 90),
-                      child: Container(
-                        width: parentWidth,
-                        color: Colors.white.withAlpha(50),
-                      ),
-                    );
-                  } else if (index < 1 + 2 - 1) {
-                    return const PostThumbnailDiscover();
-                  } else {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 25),
-                      child: Center(
-                        child: SizedBox(
-                          height: 18,
-                          width: 18,
-                          child: CircularProgressIndicator(
-                            color: CustomColor.extremelyLightBrown,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-              )),
+          // RefreshIndicator(
+          //     onRefresh: onRefresh,
+          //     child: ListView.builder(
+          //       controller: listViewController,
+          //       itemCount: 1 + 2,
+          //       itemBuilder: (context, index) {
+          //         if (index == 0) {
+          //           return Padding(
+          //             padding: const EdgeInsets.only(top: 90),
+          //             child: Container(
+          //               width: parentWidth,
+          //               color: Colors.white.withAlpha(50),
+          //             ),
+          //           );
+          //         } else if (index < 1 + 2 - 1) {
+          //           return const PostThumbnailDiscover();
+          //         } else {
+          //           return const Padding(
+          //             padding: EdgeInsets.symmetric(vertical: 25),
+          //             child: Center(
+          //               child: SizedBox(
+          //                 height: 18,
+          //                 width: 18,
+          //                 child: CircularProgressIndicator(
+          //                   color: CustomColor.extremelyLightBrown,
+          //                 ),
+          //               ),
+          //             ),
+          //           );
+          //         }
+          //       },
+          //     )),
           Container(
             decoration: const BoxDecoration(
                 color: CustomColor.mainBrown,
@@ -105,46 +105,47 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: 10,
                   ),
                   Flexible(
-                      child: Container(
-                    decoration: const BoxDecoration(
-                        color: CustomColor.fifthBrown,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: Stack(
-                      alignment: Alignment.centerLeft,
-                      children: [
-                        TextField(
-                          style: const TextStyle(color: Colors.white),
-                          focusNode: textFieldFocusNode,
-                          decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.only(
-                                  top: 13, bottom: 13, left: 50, right: 20),
-                              hintText: "Search",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white38),
-                              focusColor: Colors.white,
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)))),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 15),
-                          child: Icon(
-                            Icons.search,
-                            color: Colors.white38,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          color: CustomColor.fifthBrown,
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                      child: Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            focusNode: textFieldFocusNode,
+                            decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.only(
+                                    top: 13, bottom: 13, left: 50, right: 20),
+                                hintText: "Search",
+                                hintStyle: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.white38),
+                                focusColor: Colors.white,
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)))),
                           ),
-                        )
-                      ],
+                          const Padding(
+                            padding: EdgeInsets.only(left: 15),
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.white38,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),

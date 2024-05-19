@@ -1,63 +1,187 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
+import 'package:rockland/utility/model.dart';
 import 'package:rockland/utility/physics.dart';
 
 class ViewImageExtended extends StatefulWidget {
-  const ViewImageExtended({super.key});
+  final List<dynamic> images;
+  final User? user;
+  final int page;
+
+  const ViewImageExtended({
+    super.key,
+    required this.images,
+    this.user,
+    this.page = 0,
+  });
 
   @override
   State<ViewImageExtended> createState() => _ViewImageExtendedState();
 }
 
 class _ViewImageExtendedState extends State<ViewImageExtended> {
+  late PageController galleryController;
+
   bool _enablePaging = true;
+  bool isDynamicList = false;
+  List<String> credit = [];
+  List<dynamic> images = [];
+  String currentCredit = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    galleryController = PageController(initialPage: widget.page);
+
+    for (dynamic image in widget.images) {
+      Widget child;
+      if (image is Map<String, dynamic>) {
+        RockImages imageData = RockImages.fromJson(image);
+        credit.add(imageData.credit); // if image is rock view
+        if (imageData.link.contains("http")) {
+          child = CachedNetworkImage(
+            imageUrl: imageData.link,
+            progressIndicatorBuilder: (
+              context,
+              url,
+              downloadProgress,
+            ) {
+              return Wrap(
+                alignment: WrapAlignment.center,
+                runAlignment: WrapAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: CustomColor.extremelyLightBrown,
+                      value: downloadProgress.progress,
+                    ),
+                  )
+                ],
+              );
+            },
+          );
+        } else {
+          child = Image.file(
+            File(imageData.link),
+          );
+        }
+        isDynamicList = true;
+      } else {
+        child = CachedNetworkImage(
+          imageUrl: image,
+          progressIndicatorBuilder: (
+            context,
+            url,
+            downloadProgress,
+          ) {
+            return Wrap(
+              alignment: WrapAlignment.center,
+              runAlignment: WrapAlignment.center,
+              children: [
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    color: CustomColor.extremelyLightBrown,
+                    value: downloadProgress.progress,
+                  ),
+                )
+              ],
+            );
+          },
+        );
+        credit.add("${widget.user!.firstName} ${widget.user!.lastName}");
+      }
+      images.add(child);
+    }
+    currentCredit = credit[widget.page];
+  }
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     double parentWidth = mediaQuery.size.width;
     double parentHeight = mediaQuery.size.height;
+    double safeAreaPadding = mediaQuery.padding.top;
 
     return Scaffold(
       backgroundColor: CustomColor.mainBrown,
-      appBar: AppBar(
-        // page title
-        title: const Text('',
-            style: TextStyle(
-              color: Colors.white,
-            )),
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            )),
-      ),
-      body: PageView.builder(
-        physics: _enablePaging
-            ? const CustomPageViewScrollPhysics()
-            : const NeverScrollableScrollPhysics(),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Container(
-            width: parentWidth,
-            height: parentHeight,
-            color: CustomColor.mainBrown,
-            child: DoubleTappableInteractiveViewer(
-              onScaleChanged: (scale) {
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: CustomColor.mainBrown,
+            ),
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 15, right: 15, top: 20 + safeAreaPadding),
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () => Activity.finishActivity(context),
+                      style:
+                          IconButton.styleFrom(foregroundColor: Colors.white),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      )),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Flexible(
+                    child: Text(
+                      "© $currentCredit",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          Flexible(
+            child: PageView.builder(
+              controller: galleryController,
+              onPageChanged: (index) {
                 setState(() {
-                  _enablePaging = scale <= 1.0;
+                  currentCredit = credit[index];
                 });
               },
-              scaleDuration: Common.duration250,
-              maxZoomScale: 5,
-              maxZoomedAmount: 1,
-              child: Image.asset("lib/images/LogoUpscaled.png"),
+              physics: _enablePaging
+                  ? const CustomPageViewScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
+              itemCount: widget.images.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: parentWidth,
+                  height: parentHeight,
+                  color: CustomColor.mainBrown,
+                  child: DoubleTappableInteractiveViewer(
+                    onScaleChanged: (scale) {
+                      setState(() {
+                        _enablePaging = scale <= 1.0;
+                      });
+                    },
+                    scaleDuration: Common.duration250,
+                    maxZoomScale: 5,
+                    maxZoomedAmount: 1,
+                    child: images[index],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          )
+        ],
       ),
     );
   }

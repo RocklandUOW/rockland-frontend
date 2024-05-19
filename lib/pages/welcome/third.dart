@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/screens/account/login.dart';
 import 'package:rockland/screens/account/register.dart';
@@ -6,8 +7,28 @@ import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 
-class ThirdPage extends StatelessWidget {
+class ThirdPage extends StatefulWidget {
   const ThirdPage({super.key});
+
+  @override
+  State<ThirdPage> createState() => _ThirdPageState();
+}
+
+class _ThirdPageState extends State<ThirdPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController animController;
+
+  @override
+  void initState() {
+    animController = AnimationController(vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +45,16 @@ class ThirdPage extends StatelessWidget {
                   )),
                   Column(
                     children: [
-                      Placeholder(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 250,
-                          child: const Center(
-                            child: Text(
-                              "Put a vector art or a video here",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 250,
+                        child: Lottie.asset(
+                          "lib/images/lottie/Check.json",
+                          controller: animController,
+                          onLoaded: (composition) {
+                            animController.duration = composition.duration;
+                            animController.forward();
+                          },
                         ),
                       ),
                       const SizedBox(
@@ -97,8 +118,12 @@ class ThirdPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 5),
                         child: CommonButton(
-                          onPressed: () => Activity.startActivity(
-                              context, const HomeScreen()),
+                          onPressed: () {
+                            Activity.startActivityAndRemoveHistory(
+                              context,
+                              const HomeScreen(),
+                            );
+                          },
                           isText: true,
                           buttonText: "Skip for now. Take me to the app >",
                           size:

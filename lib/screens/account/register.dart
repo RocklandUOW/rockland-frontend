@@ -31,12 +31,15 @@ class _RegisterAccountState extends State<RegisterAccount> {
   late DismissableAlertDialog loadingDialog;
   late DismissableAlertDialog registerResult;
 
+  late final formKey;
+
   @override
   void initState() {
     super.initState();
     loadingDialog = LoadingDialog.construct(context);
     registerResult =
         DismissableAlertDialog(context: context, child: const Text("Result"));
+    formKey = GlobalKey<FormState>();
   }
 
   bool _emailValidator(String value) {
@@ -117,7 +120,10 @@ class _RegisterAccountState extends State<RegisterAccount> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
+    final mediaQuery = MediaQuery.of(context);
+    final double parentHeight = mediaQuery.size.height;
+    final double parentWidth = mediaQuery.size.width;
+    final double safeAreaPadding = mediaQuery.padding.top;
 
     return PopScope(
         canPop: true,
@@ -130,220 +136,258 @@ class _RegisterAccountState extends State<RegisterAccount> {
         },
         child: Scaffold(
           backgroundColor: CustomColor.mainBrown,
-          body: SafeArea(
-              child: Center(
-            child: Column(
-              children: [
-                Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                  ),
-                  child: ListView(
-                    children: [
-                      Column(
+          body: Column(
+            children: [
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 320,
+                      child: Stack(
                         children: [
-                          const SizedBox(
-                            height: 25,
+                          const Positioned(
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            child: Image(
+                              image: AssetImage("lib/images/login_bg.png"),
+                            ),
                           ),
-                          SizedBox(
-                            height: 250,
-                            child: Stack(
-                              children: [
-                                const Placeholder(),
-                                CommonButton(
-                                  onPressed: () {
-                                    customBackButtonPressed = true;
-                                    Activity.finishActivity(context);
-                                  },
-                                  size: const Size(40, 40),
-                                  isIcon: true,
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.black,
-                                  ),
-                                  backgroundColor: Colors.white,
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: parentWidth,
+                              height: parentHeight,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  stops: [0.6, 0.97],
+                                  colors: [
+                                    Colors.transparent,
+                                    CustomColor.mainBrown
+                                  ],
                                 ),
-                                const Positioned.fill(
-                                    child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text("Put bg art here",
-                                      style: TextStyle(color: Colors.white38)),
-                                ))
-                              ],
+                              ),
                             ),
                           ),
-                          const SizedBox(
-                            height: 25,
+                          Positioned(
+                            left: 40,
+                            top: 60 + safeAreaPadding,
+                            child: CommonButton(
+                              onPressed: () {
+                                customBackButtonPressed = true;
+                                Activity.finishActivity(context);
+                              },
+                              size: const Size(40, 40),
+                              isIcon: true,
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black,
+                              ),
+                              backgroundColor: Colors.white,
+                            ),
                           ),
-                          Form(
-                              key: formKey,
-                              child: Column(
-                                children: [
-                                  CommonTextField(
-                                    controller: emailController,
-                                    hintText: "Email",
-                                    icon: const Icon(
-                                      Icons.email,
+                          const Positioned(
+                            left: 40,
+                            bottom: 30,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Welcome!",
+                                  style: TextStyle(
                                       color: Colors.white,
-                                    ),
-                                    validator: (value) => _emailValidator(
-                                            value!)
-                                        ? null
-                                        : "Please enter a valid email address",
+                                      height: 1.1,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 40),
+                                ),
+                                Text(
+                                  "We're happy to have you here",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
                                   ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: CommonTextField(
-                                              controller: firstNameController,
-                                              hintText: "First name",
-                                              validator: (value) => value != ""
-                                                  ? null
-                                                  : "First name cannot be empty",
-                                              icon: const Icon(
-                                                Icons.person,
-                                                color: Colors.white,
-                                              ))),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                          child: CommonTextField(
-                                        controller: lastNameController,
-                                        hintText: "Last name (optional)",
-                                        validator: (value) =>
-                                            firstNameController.text != ""
-                                                ? null
-                                                : "",
-                                      )),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  CommonTextField(
-                                      controller: passwordController,
-                                      style: GoogleFonts.firaCode(
-                                        color: Colors.white,
-                                      ),
-                                      hintText: "Password",
-                                      validator: (value) => _passwordValidator(
-                                              value!)
-                                          ? null
-                                          : "Password must include an uppercase letter, a digit, a special character, and be a minimum of 8 characters long",
-                                      obscureText: true,
-                                      icon: const Icon(
-                                        Icons.key,
-                                        color: Colors.white,
-                                      )),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  CommonTextField(
-                                      controller: retypePasswordController,
-                                      style: GoogleFonts.firaCode(
-                                          color: Colors.white),
-                                      hintText: "Re-type password",
-                                      validator: (value) =>
-                                          value == passwordController.text
-                                              ? null
-                                              : "Passwords do not match",
-                                      obscureText: true,
-                                      icon: const Icon(
-                                        Icons.key,
-                                        color: Colors.white,
-                                      )),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  CommonButton(
-                                    onPressed: () {
-                                      bool valid =
-                                          formKey.currentState!.validate();
-                                      if (valid) {
-                                        handleSignUp();
-                                      }
-                                    },
-                                    buttonText: "Sign up",
-                                    textColor: Colors.white,
-                                    gradient: const LinearGradient(colors: [
-                                      CustomColor.buttonOrange,
-                                      CustomColor.buttonYellow
-                                    ]),
-                                  ),
-                                ],
-                              )),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: const TextSpan(
-                              text: 'By continuing, you agree to the ',
-                              style: TextStyle(
-                                  height: 1.5,
-                                  color: Colors.white,
-                                  fontFamily: "Lato"),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: 'Terms and Conditions ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                TextSpan(text: 'and have read the '),
-                                TextSpan(
-                                    text: 'Privacy Policy ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 35,
                           ),
                         ],
-                      )
-                    ],
-                  ),
-                )),
-                Column(
-                  children: [
-                    const Divider(
-                      thickness: 0.5,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 25,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 25, right: 25, bottom: 20, top: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 25),
+                      child: Form(
+                          key: formKey,
+                          child: Column(
+                            children: [
+                              CommonTextField(
+                                controller: emailController,
+                                hintText: "Email",
+                                icon: const Icon(
+                                  Icons.email,
+                                  color: Colors.white,
+                                ),
+                                validator: (value) => _emailValidator(value!)
+                                    ? null
+                                    : "Please enter a valid email address",
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: CommonTextField(
+                                          controller: firstNameController,
+                                          hintText: "First name",
+                                          validator: (value) => value != ""
+                                              ? null
+                                              : "First name cannot be empty",
+                                          icon: const Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          ))),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                      child: CommonTextField(
+                                    controller: lastNameController,
+                                    hintText: "Last name (optional)",
+                                    validator: (value) =>
+                                        firstNameController.text != ""
+                                            ? null
+                                            : "",
+                                  )),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              CommonTextField(
+                                  controller: passwordController,
+                                  style: GoogleFonts.firaCode(
+                                    color: Colors.white,
+                                  ),
+                                  hintText: "Password",
+                                  validator: (value) => _passwordValidator(
+                                          value!)
+                                      ? null
+                                      : "Password must include an uppercase letter, a digit, a special character, and be a minimum of 8 characters long",
+                                  obscureText: true,
+                                  icon: const Icon(
+                                    Icons.key,
+                                    color: Colors.white,
+                                  )),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              CommonTextField(
+                                  controller: retypePasswordController,
+                                  style:
+                                      GoogleFonts.firaCode(color: Colors.white),
+                                  hintText: "Re-type password",
+                                  validator: (value) =>
+                                      value == passwordController.text
+                                          ? null
+                                          : "Passwords do not match",
+                                  obscureText: true,
+                                  icon: const Icon(
+                                    Icons.key,
+                                    color: Colors.white,
+                                  )),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              CommonButton(
+                                onPressed: () {
+                                  bool valid = formKey.currentState!.validate();
+                                  if (valid) {
+                                    handleSignUp();
+                                  }
+                                },
+                                buttonText: "Sign up",
+                                textColor: Colors.white,
+                                gradient: const LinearGradient(colors: [
+                                  CustomColor.buttonOrange,
+                                  CustomColor.buttonYellow
+                                ]),
+                              ),
+                            ],
+                          )),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25),
                       child: RichText(
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: 'Already have an account? ',
-                          style: const TextStyle(
+                        text: const TextSpan(
+                          text: 'By continuing, you agree to the ',
+                          style: TextStyle(
                               height: 1.5,
                               color: Colors.white,
                               fontFamily: "Lato"),
                           children: <TextSpan>[
                             TextSpan(
-                                text: 'Sign in ',
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => _activityHandler(context),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
+                                text: 'Terms and Conditions ',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: 'and have read the '),
+                            TextSpan(
+                                text: 'Privacy Policy ',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
-                    )
+                    ),
+                    const SizedBox(
+                      height: 35,
+                    ),
                   ],
-                )
-              ],
-            ),
-          )),
+                ),
+              )),
+              Column(
+                children: [
+                  const Divider(
+                    thickness: 0.5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 25, right: 25, bottom: 20, top: 10),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: 'Already have an account? ',
+                        style: const TextStyle(
+                            height: 1.5,
+                            color: Colors.white,
+                            fontFamily: "Lato"),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: 'Sign in ',
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => _activityHandler(context),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ));
   }
 }

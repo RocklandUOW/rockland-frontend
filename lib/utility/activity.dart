@@ -19,12 +19,21 @@ class Activity {
   }
 
   static void startActivity(BuildContext context, Widget activity,
-      [int delay = 300]) {
+      [int delay = 0]) {
     Future.delayed(Duration(milliseconds: delay), () async {
       history.add(activity);
       var page = await _buildPageAsync(context, activity);
       var route = MaterialPageRoute(builder: (_) => page);
       Navigator.push(context, route);
     });
+  }
+
+  static void startActivityAndRemoveHistory(
+    BuildContext context,
+    Widget activity,
+  ) {
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => activity),
+        (Route<dynamic> route) => false);
   }
 }

@@ -19,13 +19,15 @@ class LoginStrings {
       "No account was found with the specified email address. Please register a new account with said email address.";
   static const String invalidPasswordStr =
       "The password entered was not correct. Please try again.";
+  static const String validationServiceDown =
+      "Sign in was successful, but something happened to the validation service. Please try again or contact us if the problem persists";
 }
 
 class ConnectionStrings {
   static const String connectionErrResponse = "connection error";
 
   static const String connectionErrString =
-      "Failed to establish a connection to the server. Please check your internet connection.";
+      "Failed to establish a connection to the server. Please check your internet connection. If this error persists, please inform us about the situation.";
   static const String unknownErrorString =
       "Something nasty happened to either the connection or the server";
   static const String internalServerError =
@@ -36,6 +38,12 @@ class PermissionStrings {
   static const mediaPermissionDenied =
       "You have denied access to your photos. Captured photos will not be saved to your gallery. "
       "If you change your mind, you can manually enable the permission from Android app settings.";
+  static const locationServiceDenied =
+      "You have denied access to your location. You will not be able to use this feature correctly since displayed "
+      "rocks are supposed to be based on your location. The default location is set to the University of Wollongong, Australia";
+  static const requestLocationEnable =
+      "Please enable your location service to get rock posts based on your location. "
+      "Default location is set to the University of Wollongong, Australia";
 }
 
 class RockIdentificationStrings {

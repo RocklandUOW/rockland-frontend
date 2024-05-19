@@ -62,7 +62,7 @@ class DismissableAlertDialog {
     this.okButton = okButton;
   }
 
-  void setCancelButton(Widget cancelButton) {
+  void setCancelButton(Widget? cancelButton) {
     this.cancelButton = cancelButton;
   }
 }
