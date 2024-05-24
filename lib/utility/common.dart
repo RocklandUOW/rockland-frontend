@@ -1,6 +1,4 @@
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/model.dart';

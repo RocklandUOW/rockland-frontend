@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/components/gradient_text.dart';
@@ -146,7 +144,6 @@ class HomePageState extends State<HomePage> {
     final mediaQuery = MediaQuery.of(context);
     final double middleHeight = mediaQuery.size.height / 2 + 150;
     final parentWidth = mediaQuery.size.width;
-    final parentHeight = mediaQuery.size.height;
 
     return VisibilityDetector(
       key: Key("homepagevisibilitydetect"),

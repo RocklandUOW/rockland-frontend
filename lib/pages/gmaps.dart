@@ -131,7 +131,6 @@ class _GMapsPageState extends State<GMapsPage> {
   }
 
   void goToPost(int postIndexFromList) {
-    List<Widget> history = Activity.history;
     Widget postPage = PostPage(post: posts[postIndexFromList]);
     Activity.startActivity(context, postPage);
     // try {

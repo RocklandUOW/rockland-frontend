@@ -27,11 +27,6 @@ class _FirstPageState extends State<FirstPage>
 
   @override
   Widget build(BuildContext context) {
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final double safeAreaPadding = mediaQuery.padding.top;
-    final double parentWidth = mediaQuery.size.width;
-    final double parentHeight = mediaQuery.size.height;
-
     return Container(
       color: CustomColor.mainBrown,
       child: SafeArea(

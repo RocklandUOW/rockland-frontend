@@ -3,15 +3,12 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rockland/components/button.dart';
 import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/components/post_thumbnail_discover_grid.dart';
-import 'package:rockland/pages/post-screen/post.dart';
-import 'package:rockland/screens/newpost.dart';
 import 'package:rockland/screens/settings.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
@@ -181,7 +178,6 @@ class _ProfilePageBuilderState extends State<ProfilePageBuilder> {
     final mediaQuery = MediaQuery.of(context);
     final double parentHeight = mediaQuery.size.height;
     final double parentWidth = mediaQuery.size.width;
-    final double safeAreaPadding = mediaQuery.padding.top;
     double middleHeight;
     if (widget.isFragment) {
       middleHeight = parentHeight / 2 + 90;

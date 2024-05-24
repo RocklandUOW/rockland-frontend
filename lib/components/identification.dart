@@ -5,11 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rockland/pages/post-screen/post_identifications.dart';
 import 'package:rockland/styles/colors.dart';
-import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:rockland/utility/strings.dart';
 import 'package:rockland/utility/user_provider.dart';
 
 class IdentificationCard extends StatefulWidget {
@@ -155,11 +152,7 @@ class IdentificationCardState extends State<IdentificationCard> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final double safeAreaPadding = mediaQuery.padding.top;
     final double parentWidth = mediaQuery.size.width;
-    final double parentHeight = mediaQuery.size.height;
-    final double middleHeight = parentHeight / 2 + 100;
-    final double maxHeight = parentHeight - safeAreaPadding;
 
     return Consumer<UserProvider>(
       builder: (context, value, child) => Padding(

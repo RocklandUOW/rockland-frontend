@@ -6,7 +6,6 @@ import 'package:rockland/screens/account/login.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
-import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/user_provider.dart';
 
 class SettingsScreen extends StatefulWidget {

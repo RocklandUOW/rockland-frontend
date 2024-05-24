@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rockland/components/alert_dialog.dart';
-import 'package:rockland/components/button.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
-import 'package:rockland/utility/common.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:rockland/utility/strings.dart';
@@ -125,7 +123,6 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    double parentHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         backgroundColor: CustomColor.mainBrown,

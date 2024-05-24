@@ -2,20 +2,16 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rockland/components/alert_dialog.dart';
-import 'package:rockland/components/camera_page_builder.dart';
 import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/components/post_buttons.dart';
 import 'package:rockland/components/profile_page_builder.dart';
 import 'package:rockland/components/rock_info.dart';
 import 'package:rockland/pages/gmaps.dart';
-import 'package:rockland/pages/home/profile.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/screens/image.dart';
 import 'package:rockland/styles/colors.dart';
-import 'package:rockland/pages/post-screen/post_info.dart';
 import 'package:rockland/pages/post-screen/post_comments.dart';
 import 'package:rockland/pages/post-screen/post_identifications.dart';
 import 'package:rockland/utility/activity.dart';
@@ -432,9 +428,6 @@ class PostPageState extends State<PostPage> {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double safeAreaPadding = mediaQuery.padding.top;
     final double parentWidth = mediaQuery.size.width;
-    final double parentHeight = mediaQuery.size.height;
-    final double middleHeight = parentHeight / 2 + 100;
-    final double maxHeight = parentHeight - safeAreaPadding;
 
     return Consumer<UserProvider>(
       builder: (context, value, child) {

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/screens/image.dart';
@@ -11,7 +10,6 @@ import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:rockland/utility/model.dart';
 import 'package:rockland/utility/user_provider.dart';
 
 class PostThumbnailDiscover extends StatefulWidget {

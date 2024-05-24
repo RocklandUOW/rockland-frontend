@@ -1,22 +1,16 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/components/post_thumbnail_discover.dart';
 import 'package:rockland/components/post_thumbnail_discover_grid.dart';
 import 'package:rockland/pages/gmaps.dart';
-import 'package:rockland/pages/post-screen/post.dart';
-import 'package:rockland/screens/newpost.dart';
 import 'package:rockland/screens/search.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
 import 'package:rockland/utility/model.dart';
-import 'package:rockland/utility/strings.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class DiscoverPageController {

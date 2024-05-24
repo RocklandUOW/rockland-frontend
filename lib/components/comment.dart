@@ -9,7 +9,6 @@ import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/model.dart';
 import 'package:http/http.dart' as http;
-import 'package:rockland/utility/strings.dart';
 import 'package:rockland/utility/user_provider.dart';
 
 class CommentCard extends StatefulWidget {
@@ -97,10 +96,10 @@ class _CommentCardState extends State<CommentCard> {
         isLoading = false;
         hasError = false;
         if (e is Error) {
-          print((e as Error).errorCode);
-          print((e as Error).description);
+          // print((e as Error).errorCode);
+          // print((e as Error).description);
         } else {
-          print(e.toString());
+          // print(e.toString());
         }
         // to display to the user.
         // error = ErrorBuilder.build(internalErr.errorCode);
@@ -161,11 +160,7 @@ class _CommentCardState extends State<CommentCard> {
   @override
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final double safeAreaPadding = mediaQuery.padding.top;
     final double parentWidth = mediaQuery.size.width;
-    final double parentHeight = mediaQuery.size.height;
-    final double middleHeight = parentHeight / 2 + 100;
-    final double maxHeight = parentHeight - safeAreaPadding;
 
     return Consumer<UserProvider>(
       builder: (context, value, child) => Padding(

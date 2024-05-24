@@ -13,14 +13,12 @@ import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/components/rock_info.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
-import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/model.dart';
 import 'package:rockland/utility/strings.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class CameraPageController {
   late Function()? takePhoto;

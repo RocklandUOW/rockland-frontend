@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rockland/components/popup_container.dart';
-import 'package:rockland/components/post_thumbnail_discover.dart';
-import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/styles/colors.dart';
 import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
@@ -45,7 +42,6 @@ class _SearchScreenState extends State<SearchScreen> {
     final mediaQuery = MediaQuery.of(context);
     final safeAreaPadding = mediaQuery.padding.top;
 
-    double parentWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: CustomColor.mainBrown,
       body: Stack(
