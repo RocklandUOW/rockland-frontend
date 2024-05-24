@@ -4,8 +4,14 @@ import 'package:rockland/styles/colors.dart';
 class PhotoPreviewCard extends StatelessWidget {
   final double width;
   final Widget photo;
+  final Function() onDeleteClick;
 
-  const PhotoPreviewCard({super.key, required this.width, required this.photo});
+  const PhotoPreviewCard({
+    super.key,
+    required this.width,
+    required this.photo,
+    required this.onDeleteClick,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +35,7 @@ class PhotoPreviewCard extends StatelessWidget {
             right: 10,
             top: 10,
             child: GestureDetector(
+              onTap: onDeleteClick,
               child: const CircleAvatar(
                 backgroundColor: CustomColor.extremelyLightBrown,
                 maxRadius: 16,

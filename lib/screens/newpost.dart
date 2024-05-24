@@ -25,6 +25,7 @@ import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:rockland/utility/user_provider.dart';
+import 'package:collection/src/list_extensions.dart';
 
 class NewPostScreen extends StatefulWidget {
   final List<File>? initialPhotos;
@@ -317,10 +318,15 @@ class NewPostScreenState extends State<NewPostScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ...photosList.map(
-                              (photo) => Padding(
+                            ...photosList.mapIndexed(
+                              (index, photo) => Padding(
                                 padding: const EdgeInsets.only(right: 15),
                                 child: PhotoPreviewCard(
+                                    onDeleteClick: () {
+                                      setState(() {
+                                        photosList.removeAt(index);
+                                      });
+                                    },
                                     width: thumbnailWidth,
                                     photo: Image(
                                       image: FileImage(photo),
