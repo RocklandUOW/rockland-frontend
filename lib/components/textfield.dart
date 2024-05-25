@@ -10,6 +10,8 @@ class CommonTextField extends StatefulWidget {
   final TextStyle? style;
   final TextStyle? hintStyle;
   final String? Function(String? value)? validator;
+  final int? minLines;
+  final int? maxLines;
 
   const CommonTextField(
       {super.key,
@@ -19,7 +21,9 @@ class CommonTextField extends StatefulWidget {
       this.obscureText = false,
       this.style,
       this.hintStyle,
-      this.validator});
+      this.validator,
+      this.minLines = 1,
+      this.maxLines = 1});
 
   @override
   State<CommonTextField> createState() => _CommonTextFieldState();
@@ -31,6 +35,8 @@ class _CommonTextFieldState extends State<CommonTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
       controller: widget.controller,
       style: widget.style ?? const TextStyle(color: Colors.white),
       cursorColor: Colors.white,

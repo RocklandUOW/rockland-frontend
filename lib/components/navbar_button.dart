@@ -42,12 +42,9 @@ class CustomNavbarButtonState extends State<CustomNavbarButton> {
                 duration: const Duration(milliseconds: 100),
                 curve: Curves.easeInOut,
                 transform: Transform.translate(
-                        offset: Offset(
-                            0,
-                            widget.buttonIndex == widget.pageController.page
-                                ? 0
-                                : 3))
-                    .transform,
+                  offset: Offset(0,
+                      widget.buttonIndex == widget.pageController.page ? 0 : 3),
+                ).transform,
                 child: AnimatedOpacity(
                   opacity:
                       widget.buttonIndex == widget.pageController.page ? 1 : 0,
