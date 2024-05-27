@@ -8,8 +8,10 @@ import 'package:rockland/components/popup_container.dart';
 import 'package:rockland/components/post_thumbnail.dart';
 import 'package:rockland/components/profile_page_builder.dart';
 import 'package:rockland/pages/home/profile.dart';
+import 'package:rockland/screens/game/loading.dart';
 import 'package:rockland/screens/home.dart';
 import 'package:rockland/styles/colors.dart';
+import 'package:rockland/utility/activity.dart';
 import 'package:rockland/utility/common.dart';
 import 'package:rockland/utility/model.dart';
 import 'package:http/http.dart' as http;
@@ -43,6 +45,7 @@ class HomePageState extends State<HomePage> {
   bool hasMorePosts = true;
   bool hasError = false;
   bool requestNext = false;
+  bool isGameFirstOpen = true;
   int currentPostPage = 1;
   late Error error;
   late Error internalErr;
@@ -146,7 +149,7 @@ class HomePageState extends State<HomePage> {
     final parentWidth = mediaQuery.size.width;
 
     return VisibilityDetector(
-      key: Key("homepagevisibilitydetect"),
+      key: const Key("homepagevisibilitydetect"),
       child: Consumer<UserProvider>(
         builder: (context, value, child) => Scaffold(
           body: Stack(
@@ -216,24 +219,33 @@ class HomePageState extends State<HomePage> {
                             topRight: Radius.circular(20))),
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: parentWidth,
-                            height: 250,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 1,
-                                    color: CustomColor.seventhBrown,
-                                    style: BorderStyle.solid),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: const Padding(
-                              padding: EdgeInsets.all(25),
-                              child: Image(
-                                fit: BoxFit.cover,
-                                image: AssetImage(
-                                  "lib/images/games_banner.png",
+                        GestureDetector(
+                          onTap: () async {
+                            await Activity.startActivityForResult(
+                              context,
+                              GameLoadingScreen(isFirstOpen: isGameFirstOpen),
+                            );
+                            isGameFirstOpen = false;
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(25),
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: parentWidth,
+                              height: 250,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1,
+                                      color: CustomColor.seventhBrown,
+                                      style: BorderStyle.solid),
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: const Padding(
+                                padding: EdgeInsets.all(25),
+                                child: Image(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    "lib/images/games_banner.png",
+                                  ),
                                 ),
                               ),
                             ),

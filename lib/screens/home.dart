@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rockland/components/alert_dialog.dart';
 import 'package:rockland/components/navbar_button.dart';
@@ -130,6 +131,9 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+    //     overlays: SystemUiOverlay.values);
+        
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double parentHeight = mediaQuery.size.height;
     final double navbarHeight = parentHeight * .08;

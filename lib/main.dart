@@ -23,13 +23,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  final bool test1 = true; // check first time app opened.
-  final bool test2 =
-      false; // check auth token. if both false open welcome, else just the login.
+  // check first time app opened.
+  final bool test1 = true; 
+  // check auth token. if both false open welcome, else just the login.
+  final bool test2 = false;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.bottom]);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

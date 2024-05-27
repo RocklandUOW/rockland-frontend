@@ -18,6 +18,11 @@ class Activity {
     }
   }
 
+  static void finishActivityWithResult(BuildContext context, dynamic result) {
+    history.removeLast();
+    Navigator.of(context).pop(result);
+  }
+
   static void startActivity(BuildContext context, Widget activity,
       [int delay = 0]) {
     Future.delayed(Duration(milliseconds: delay), () async {
@@ -26,6 +31,14 @@ class Activity {
       var route = MaterialPageRoute(builder: (_) => page);
       Navigator.push(context, route);
     });
+  }
+
+  static Future<dynamic> startActivityForResult(
+      BuildContext context, Widget activity) {
+    history.add(activity);
+    return Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => activity,
+    ));
   }
 
   static void startActivityAndRemoveHistory(

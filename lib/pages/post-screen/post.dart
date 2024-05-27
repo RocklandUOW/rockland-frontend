@@ -158,6 +158,8 @@ class PostPageState extends State<PostPage> {
 
   void getRockInfo() async {
     String identifiedRock = widget.post.rocktype;
+    print("identifiedRock");
+    print(identifiedRock);
     setState(() {
       isRockLoading = true;
     });
@@ -193,8 +195,8 @@ class PostPageState extends State<PostPage> {
       }
     } catch (e) {
       setState(() {
+        rockHasError = true;
         isRockLoading = false;
-        rockHasError = false;
         if (e is Error) {
           print((e as Error).errorCode);
           print((e as Error).description);
@@ -843,13 +845,17 @@ class PostPageState extends State<PostPage> {
                                 Padding(
                                   padding: const EdgeInsets.all(25),
                                   child: GestureDetector(
-                                    onTap: () => Activity.startActivity(
-                                      context,
-                                      RockInformation(
-                                        identifiedRock: rock,
-                                        isFragment: false,
-                                      ),
-                                    ),
+                                    onTap: () {
+                                      if (!rockHasError) {
+                                        Activity.startActivity(
+                                          context,
+                                          RockInformation(
+                                            identifiedRock: rock,
+                                            isFragment: false,
+                                          ),
+                                        );
+                                      }
+                                    },
                                     child: Container(
                                       alignment: Alignment.center,
                                       width: parentWidth,
@@ -906,9 +912,11 @@ class PostPageState extends State<PostPage> {
                                                         child:
                                                             CachedNetworkImage(
                                                           fit: BoxFit.cover,
-                                                          imageUrl: rock.rock[
-                                                                  "images"][0]
-                                                              ["link"],
+                                                          imageUrl: rockHasError
+                                                              ? "https://i0.wp.com/worldwellnessgroup.org.au/wp-content/uploads/2020/07/placeholder.png?fit=1200%2C800&ssl=1"
+                                                              : rock.rock[
+                                                                      "images"]
+                                                                  [0]["link"],
                                                           progressIndicatorBuilder:
                                                               (
                                                             context,
@@ -953,7 +961,10 @@ class PostPageState extends State<PostPage> {
                                                                 .center,
                                                         children: [
                                                           Text(
-                                                            rock.rock["name"],
+                                                            rockHasError
+                                                                ? "Error"
+                                                                : rock.rock[
+                                                                    "name"],
                                                             style:
                                                                 const TextStyle(
                                                               color:
@@ -966,22 +977,31 @@ class PostPageState extends State<PostPage> {
                                                           ),
                                                           const SizedBox(
                                                               height: 5),
-                                                          const Text(
-                                                            "Tap this card to learn more about this rock",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
+                                                          Text(
+                                                            rockHasError
+                                                                ? "There was an error fetching the rock data. Please try again"
+                                                                : "Tap this card to learn more about this rock",
+                                                            style:
+                                                                const TextStyle(
+                                                                    color: Colors
+                                                                        .white),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
-                                                    const CircleAvatar(
-                                                      child: Icon(
-                                                        size: 35,
-                                                        Icons
-                                                            .keyboard_arrow_right_sharp,
-                                                        color: CustomColor
-                                                            .mainBrown,
+                                                    const SizedBox(
+                                                      width: 20,
+                                                    ),
+                                                    Opacity(
+                                                      opacity: rockHasError ? 0 : 1,
+                                                      child: const CircleAvatar(
+                                                        child: Icon(
+                                                          size: 35,
+                                                          Icons
+                                                              .keyboard_arrow_right_sharp,
+                                                          color: CustomColor
+                                                              .mainBrown,
+                                                        ),
                                                       ),
                                                     )
                                                   ],

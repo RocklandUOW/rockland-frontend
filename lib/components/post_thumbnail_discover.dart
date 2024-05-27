@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rockland/components/emoji_text.dart';
 import 'package:rockland/pages/post-screen/post.dart';
 import 'package:rockland/screens/image.dart';
 import 'package:rockland/styles/colors.dart';
@@ -204,11 +205,12 @@ class _PostThumbnailDiscoverState extends State<PostThumbnailDiscover> {
                   AnimatedSize(
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.ease,
-                    child: Text(
-                      widget.post.description,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(color: Colors.white, height: 1.4),
-                    ),
+                    // child: Text(
+                    //   widget.post.description,
+                    //   textAlign: TextAlign.left,
+                    //   style: const TextStyle(color: Colors.white, height: 1.4),
+                    // ),
+                    child: TextWithEmojis(text: widget.post.description + "🤬", fontSize: 14, color: Colors.white),
                   ),
                   const AnimatedSize(
                     duration: Duration(milliseconds: 400),
